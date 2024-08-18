@@ -1,65 +1,135 @@
 <!DOCTYPE HTML>
 <html lang="en">
-  <head>
+<head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
-    <title>Yifeng Xu</title>
-
     <meta name="author" content="Yifeng Xu">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon" href="images/favicon/favicon.png" type="image/x-icon">
     <link rel="stylesheet" type="text/css" href="stylesheet.css">
-    
-  </head>
+    <title>Yifeng Xu</title>
+    <style>
+        body {
+            max-width: 700px;
+            margin: 50px auto;
+        }
+        .semester {
+            color: gray;
+        }
+        .category {
+            color: gray;
+        }
+        .course-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+        }
+        .course-title {
+            margin-right: 10px;
+            flex-grow: 1;
+/*            border-bottom: 1px dotted #000;*/
+        }
+        .note-link {
+            margin-left: 5px;
+        }
+    </style>
+</head>
 
-  <body>
-    <div style="margin-left: 15%; margin-right: 15%; margin-top: 50px">
+<body>
 
-      <h2 class="name" style="text-align: center">Notes</h2>
-      <br/>
-      <hr/>
-      <br/>
+<div style="margin-left: 1em; margin-right: 1em;">
 
-      <h3 style="color: gray">Spring, 2022</h3>
-      <p>
-        信息论, HITsz, lectured by <a href="https://faculty.hitsz.edu.cn/huazhongyun">Zhongyun Hua</a>.&ensp;
-        <a href="sources/info/信息论.pdf">[note]</a>
-      </p>
+    <h2 style="text-align: center">Notes</h2>
 
-      <h3 style="color: gray">Fall, 2021</h3>
-      <p>
-        密码学基础, HITsz, lectured by <a href="https://faculty.hitsz.edu.cn/jianglin">Lin Jiang</a>.&ensp;
-        <a href="sources/cryp/密码学基础.pdf">[note]</a>
-      </p>
+    <br/><hr/><br/>
 
-      <h3 style="color: gray">Spring, 2021</h3>
-      <p>
-        计算方法, HITsz, lectured by <a href="https://faculty.hitsz.edu.cn/yangyunyun">Yunyun Yang</a>.&ensp;
-        <a href="sources/nume/计算方法思维导图.pdf">[mindmap]</a>
-      </p>
-      <p>
-        数理逻辑, HITsz, lectured by Shijun Ren.&ensp;
-        <a href="sources/logic/数理逻辑题型一览.pdf">[note]</a>
-      </p>
-      
-      <h3 style="color: gray">Fall, 2020</h3>
-      <p>
-        概率论与数理统计, HITsz, lectured by <a href="https://faculty.hitsz.edu.cn/ouyangshunxiang">Shunxiang Ouyang</a>.&ensp;
-        <a href="sources/prob/概率论与数理统计.pdf">[note]</a>
-        <a href="sources/prob/常见随机变量.pdf">[common r.v.]</a>
-      </p>
-      <p>
-        算法设计与分析, HITsz, lectured by <a href="https://faculty.hitsz.edu.cn/hezhenyu">Zhenyu He</a>.&ensp;
-        <a href="sources/algo/算法设计与分析证明集合.pdf">[note]</a>
-      </p>
+    <h3 class="category">Graduate Courses</h3>
 
-      <h3 style="color: gray">Fall, 2019</h3>
-      <p>
-        集合论与图论, HITsz, lectured by <a href="https://faculty.hitsz.edu.cn/tanglinlin">Linlin Tang</a>.&ensp;
-        <a href="sources/setg/集合论与图论定理总结.pdf">[note]</a>
-        <a href="sources/setg/图论思维导图.pdf">[mindmap]</a>
-      </p>
+    <!-- <p class="semester">Summer, 2024</p>
+    <p>
+        概率图模型, UCAS, lectured by <a href="https://anson.ucdavis.edu/~jie/">Jie Peng</a>.
+    </p>
 
-    </div>
-  </body>
+    <p class="semester">Spring, 2024</p>
+    <p>
+        泛函分析, UCAS, lectured by <a href="https://people.ucas.ac.cn/~0017108">Gang Meng</a>.
+    </p>
+    <p>
+        强化学习, UCAS, lectured by <a href="https://ia.cas.cn/rcdw/fyjy/202404/t20240422_7129929.html">Yuanheng Zhu</a>.
+    </p> -->
+
+    <p class="semester">Fall, 2023</p>
+
+    <!-- <p>
+        随机过程, UCAS, lectured by <a href="https://people.ucas.ac.cn/~yfsun">Yingfei Sun</a>.
+    </p> -->
+
+    <p class="course-item">
+        <span class="course-title">矩阵论, UCAS, lectured by <a href="https://people.ucas.ac.cn/~0002038">Shiwei Ye</a>.</span>
+        <a class="note-link" href="sources/matr/矩阵论.pdf">[note]</a>
+    </p>
+
+    <br/><hr style="border-top: 1px dashed #a2a9b6"/><br/>
+
+    <h3 class="category">Undergraduate Courses</h3>
+
+    <p class="semester">Spring, 2022</p>
+
+    <p class="course-item">
+        <span class="course-title">信息论, HITsz, lectured by <a href="https://faculty.hitsz.edu.cn/huazhongyun">Zhongyun Hua</a>.</span>
+        <a class="note-link" href="sources/info/信息论.pdf">[note]</a>
+    </p>
+
+    <p class="semester">Fall, 2021</p>
+
+    <p class="course-item">
+        <span class="course-title">密码学基础, HITsz, lectured by <a href="https://faculty.hitsz.edu.cn/jianglin">Lin Jiang</a>.</span>
+        <a class="note-link" href="sources/cryp/密码学基础.pdf">[note]</a>
+    </p>
+
+    <p class="semester">Spring, 2021</p>
+
+    <p class="course-item">
+        <span class="course-title">计算方法, HITsz, lectured by <a href="https://faculty.hitsz.edu.cn/yangyunyun">Yunyun Yang</a>.</span>
+        <a class="note-link" href="sources/nume/计算方法思维导图.pdf">[mindmap]</a>
+    </p>
+
+    <p class="course-item">
+        <span class="course-title">数理逻辑, HITsz, lectured by Shijun Ren.</span>
+        <a class="note-link" href="sources/logic/数理逻辑题型一览.pdf">[note]</a>
+    </p>
+
+    <p class="semester">Fall, 2020</p>
+
+    <p class="course-item">
+        <span class="course-title">概率论与数理统计, HITsz, lectured by <a href="https://faculty.hitsz.edu.cn/ouyangshunxiang">Shunxiang Ouyang</a>.</span>
+        <a class="note-link" href="sources/prob/概率论与数理统计.pdf">[note]</a>
+        <a class="note-link" href="sources/prob/常见随机变量.pdf">[common r.v.]</a>
+    </p>
+
+    <p class="course-item">
+        <span class="course-title">算法设计与分析, HITsz, lectured by <a href="https://faculty.hitsz.edu.cn/hezhenyu">Zhenyu He</a>.</span>
+        <a class="note-link" href="sources/algo/算法设计与分析证明集合.pdf">[note]</a>
+    </p>
+
+    <p class="semester">Fall, 2019</p>
+
+    <p class="course-item">
+        <span class="course-title">集合论与图论, HITsz, lectured by <a href="https://faculty.hitsz.edu.cn/tanglinlin">Linlin Tang</a>.</span>
+        <a class="note-link" href="sources/setg/集合论与图论定理总结.pdf">[note]</a>
+        <a class="note-link" href="sources/setg/图论思维导图.pdf">[mindmap]</a>
+    </p>
+
+
+    <!-- <br/><hr style="border-top: 1px dashed #a2a9b6"/><br/>
+
+    <h3 class="category">Online Courses</h3>
+
+    <br/><hr style="border-top: 1px dashed #a2a9b6"/><br/>
+
+    <h3 class="category">Books</h3>
+     -->
+
+</div>
+
+</body>
 </html>

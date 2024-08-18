@@ -1,0 +1,105 @@
+\PassOptionsToPackage{quiet}{fontspec}
+\documentclass{article}
+
+
+%%%%%%%%%%%%%%%%%%% usepackage %%%%%%%%%%%%%%%%%%%
+
+\usepackage[a4paper, margin=1in]{geometry}
+\usepackage{ctex}
+
+\usepackage{amsthm, amsfonts, amsmath, amssymb}
+\usepackage{mathtools}
+\usepackage{centernot}
+\usepackage{arydshln}
+\setcounter{MaxMatrixCols}{11}
+
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage[hidelinks]{hyperref}
+\usepackage{framed}
+\usepackage{float}
+
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable}
+
+\usepackage{xcolor}
+\usepackage{multicol}
+\usepackage{multirow}
+
+\usepackage{enumitem}
+\setlist{noitemsep}
+
+
+%%%%%%%%%%%%%%%%%%%%%% math %%%%%%%%%%%%%%%%%%%%%%
+
+\theoremstyle{definition}
+\newtheorem{theorem}{定理}[section]
+\newtheorem{corollary}[theorem]{推论}
+\newtheorem{lemma}[theorem]{引理}
+\newtheorem*{property}{性质}
+
+\theoremstyle{definition}
+\newtheorem{definition}{定义}[section]
+\newtheorem{example}{例}[section]
+\newtheorem{exercise}{练习}
+
+\theoremstyle{remark}
+\newtheorem*{remark}{注解}
+\newtheorem*{note}{注意}
+\newtheorem*{com}{注释}
+
+\tcolorboxenvironment{example}{colback=blue!5!white, boxrule=0.5pt, breakable}
+\tcolorboxenvironment{remark}{colback=green!10!white, boxrule=0.5pt, breakable}
+\tcolorboxenvironment{note}{colback=yellow!10!white, boxrule=0.5pt, breakable}
+\tcolorboxenvironment{proof}{colback=black!5!white, boxrule=0.5pt, breakable}
+
+
+%%%%%%%%%%%%%%%%%% new command %%%%%%%%%%%%%%%%%%%
+\newcommand{\ind}{\mathrel{\perp\!\!\!\!\perp}}
+\newcommand{\Cov}{\mathrm{Cov}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\G}{\mathbb{G}}
+\newcommand{\V}{\mathbb{V}}
+\newcommand{\Pb}{\mathbb{P}}
+\newcommand{\sigmaXX}{\sigma_{\scalebox{.6}{$XX$}}}
+\newcommand{\sigmaYY}{\sigma_{\scalebox{.6}{$YY$}}}
+\newcommand{\sigmaXY}{\sigma_{\scalebox{.6}{$XY$}}}
+\newcommand{\sigmaYX}{\sigma_{\scalebox{.6}{$YX$}}}
+\newcommand{\sigmaXYZ}{\sigma_{\scalebox{.6}{$XY\vert Z$}}}
+\newcommand{\sigmaYXZ}{\sigma_{\scalebox{.6}{$YX\vert Z$}}}
+\newcommand{\pa}{\mathrm{pa}}
+\newcommand{\ch}{\mathrm{ch}}
+\newcommand{\nb}{\mathrm{nb}}
+\newcommand{\bd}{\mathrm{bd}}
+\newcommand{\cl}{\mathrm{cl}}
+\newcommand\norm[1]{\Vert#1\Vert}
+
+
+%%%%%%%%%%%%%%%%%%%%%% main %%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+% \begin{sloppypar}
+
+\title{课程笔记·UCAS矩阵论}
+\author{xyfJASON\\中国科学院大学}
+\date{}
+
+\maketitle
+\tableofcontents
+\pagebreak
+
+\input{chapter1} \pagebreak
+\input{chapter2} \pagebreak
+\input{chapter3} \pagebreak
+\input{chapter4} \pagebreak
+\input{chapter5} \pagebreak
+\input{chapter6} \pagebreak
+
+\nocite{*}
+\bibliographystyle{unsrt}
+\bibliography{references}
+
+% \end{sloppypar}
+\end{document}

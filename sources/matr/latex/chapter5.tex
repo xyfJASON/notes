@@ -1,0 +1,700 @@
+\section{特征值的估计}
+
+\subsection{特征值的估计}
+
+矩阵的特征值在理论上和实际应用中都是十分重要的，但是特征值的计算一般是非常麻烦的，尤其当矩阵的阶数比较高时，要精确计算出矩阵的特征值是相当困难的，因此，由矩阵元素的简单关系式估计出特征值的范围就显得尤为重要。本节将主要给出特征值的估计与圆盘定理，以及谱半径的估计。
+
+\begin{theorem}[特征值的上界]
+设 $A\in \mathbb R^{n\times n}$，令：
+\[
+    M=\max_{1\leq r,s\leq n}\frac{1}{2}|a_{rs}-a_{sr}|
+\]
+若 $\lambda$ 表示 $A$ 的任一特征值，则 $\lambda$ 的虚部 $\text{Im}(\lambda)$ 满足不等式：
+\begin{align*}
+    &|\text{Im}(\lambda)|\leq M\sqrt{\frac{n(n-1)}{2}}\\
+    &|\text{Im}(\lambda)|\leq\frac{\Vert A-A^T\Vert_2}{2}\\
+    &|\text{Im}(\lambda)|\leq\frac{\Vert A-A^T\Vert_1\cdot\sqrt{n}}{2}
+\end{align*}
+\end{theorem}
+
+\begin{remark}
+基本思想：任何一个实方阵都可以拆分为实对称阵和实反对称阵的和：
+\[
+    A=\frac{1}{2}(A+A^T)+\frac{1}{2}(A-A^T)
+\]
+我们知道实对称阵的特征值一定是实数，而实反对称阵的特征值一定是 0 或虚数。因此，可以认为上面的两部分分别决定了特征值的实部和虚部，这就是为什么我们关注 $M=\max\limits_{1\leq r,s\leq n}\frac{1}{2}|a_{rs}-a_{sr}|$.
+\end{remark}
+\begin{proof}
+暂略。
+\end{proof}
+
+\begin{definition}[行对角占优]
+设 $A\in\mathbb C^{n\times n}$，令：
+\[
+    R_r(A)=\sum_{s=1,s\neq r}^n|a_{rs}|,\quad r=1,\ldots,n
+\]
+若 $|a_{rr}|>R_{r}(A),\ \forall\ r=1,\ldots,n$，则称矩阵 $A$ 按行对角占优。
+\end{definition}
+
+\begin{theorem}
+行对角占优阵一定可逆。
+\end{theorem}
+\begin{proof}
+假设 $A$ 不可逆，则其列线性相关，即存在不全为零的 $k_1,\ldots,k_n$ 使得 $k_1a_1+\cdots+k_na_n=0$. 设 $k_r$ 是其中模长最大的，考虑第 $r$ 个分量：
+\[
+    k_1a_{r1}+\cdots+k_na_{rn}=0\implies a_{rr}=-\sum_{s=1,s\neq r}^n\frac{k_s}{k_r}a_{rs}
+\]
+于是：
+\[
+    |a_{rr}|\leq \sum_{s=1,s\neq r}^n\frac{|k_s|}{|k_r|}|a_{rs}|\leq \sum_{s=1,s\neq r}^n|a_{rs}|
+\]
+与 $A$ 行对角占优矛盾，故假设不成立。
+\end{proof}
+
+\begin{theorem}[行对角占优阵的行列式的上下界]
+设 $A\in\mathbb C^{n\times n}$ 且按行对角占优，令：
+\[
+    M_r=|a_{rr}|+\sum_{s=r+1}^n|a_{rs}|,\quad m_r=|a_{rr}|-\sum_{s=r+1}^n|a_{rs}|,\quad r=1,\ldots,n
+\]
+则：
+\[
+    0<\prod_{r=1}^n m_r\leq |\det A|=\prod_{r=1}^n|\lambda_r(A)|\leq\prod_{r=1}^n M_r
+\]
+当 $a_{rs}=0\ (s>r)$ 时等号成立。
+\end{theorem}
+\begin{proof}
+对 $A$ 分块：
+\[
+    A=\left[\begin{array}{c:ccc}
+    a_{11}&a_{12}&\cdots&a_{1n}\\
+    \hdashline a_{21}&&&\\
+    \vdots&&A_1&\\
+    a_{n1}&&&\\
+    \end{array}\right]
+\]
+设 $x=(\xi_2,\ldots,\xi_n)^T$ 且满足：
+\[
+    \begin{bmatrix}a_{21}\\\vdots\\a_{n1}\end{bmatrix}+A_1\begin{bmatrix}\xi_2\\\vdots\\\xi_n\end{bmatrix}=0
+\]
+则有 $|\xi_k|=\max\{|\xi_2|,\ldots,|\xi_n|\}<1$，证明方式与上面证明行对角占优矩阵一定可逆的方式类似。
+于是，利用行列式的性质，有：
+\[
+    \det(A)=\det\left(A\begin{bmatrix}1&0\\x&I_{n-1}\end{bmatrix}\right)=\det\left(
+    \left[\begin{array}{c:ccc}
+    b_{11}&a_{12}&\cdots&a_{1n}\\
+    \hdashline&&&\\
+    0&&A_1&\\
+    &&&
+    \end{array}\right]
+    \right)=|b_{11}|\cdot\det(A_1)
+\]
+其中
+\[
+    b_{11}=a_{11}+\sum_{s=2}^na_{1s}\xi_s,\quad|\xi_s|<1
+\]
+因此 $m_1\leq|b_{11}|\leq M_1$.  然后递归地对 $A_1$ 做类似推导即可。
+\end{proof}
+
+\begin{theorem}[Hadamard 不等式]
+设 $A\in\mathbb C^{n\times n}$，则有：
+\[
+    |\det(A)|=\prod_{r=1}^n|\lambda_r(A)|\leq\left[\prod_{s=1}^n\left(\sum_{r=1}^n|a_{rs}|^2\right)\right]^{1/2}
+\]
+\end{theorem}
+\begin{remark}[直观解释]
+平行多面体的体积小于等于将其拉成正立方体的体积。
+\end{remark}
+\begin{proof}
+若 $a_1,\ldots,a_n$ 线性无关，则显然成立；否则，进行 Gram-Schmidt 正交化过程，写作矩阵形式：
+\[
+    (a_1,a_2,\ldots,a_n)=(b_1,b_2,\ldots,b_n)\begin{bmatrix}1&k_{21}&\cdots&k_{n1}\\&1&\cdots&k_{n2}\\&&\ddots&\vdots\\&&&1\end{bmatrix}
+\]
+易知 $\Vert a_i\Vert^2\geq\Vert b_i\Vert^2$，于是：
+\[
+    |\det(A)|^2=|\det(B)|^2=\det(B^HB)=\Vert b_1\Vert^2\cdots\Vert b_n\Vert^2\leq\Vert a_1\Vert^2\cdots\Vert a_n\Vert^2
+\]
+\end{proof}
+
+\begin{theorem}[Schur 不等式，特征值模长平方和的界]
+设 $A\in\mathbb C^{n\times n}$ 的特征值为 $\lambda_1,\ldots,\lambda_n$，则：
+\[
+    \sum_{r=1}^n|\lambda_r|^2\leq\sum_{r=1}^n\sum_{s=1}^n|a_{rs}|^2=\Vert A\Vert_F^2
+\]
+\end{theorem}
+\begin{proof}
+根据 Schur 定理 \ref{thm:schur}，存在酉矩阵 $U$ 使得 $A=UTU^H$，其中 $T$ 为上三角矩阵，对角元素为 $A$ 的特征值，且：
+\[
+    \sum_{r=1}^n|\lambda_r|^2=\sum_{k=1}^n|t_{kk}|^2\leq\sum_{r=1}^n\sum_{s=1}^n|t_{rs}|^2=\text{tr}(T^HT)=\text{tr}(A^HA)
+\]
+\end{proof}
+
+\begin{definition}[行盖尔圆]
+设 $A\in\mathbb C^{m\times n}$，记第 $i$ 个行盖尔圆为：
+\[
+    S_i=\{z\mid |z-a_{ii}|\leq R_i,\,z\in\mathbb C\}
+\]
+其中 $R_i=R_i(A)=\sum_{j\neq i}|a_{ij}|$.
+\end{definition}
+
+\begin{theorem}[圆盘定理 1]
+$A$ 的所有特征值在其 $n$ 个盖尔圆的并集之内，即：
+\[
+    \lambda\in S=\bigcup_{i=1}^nS_i=\bigcup_{i=1}^n\{z\mid |z-a_{ii}|\leq R_i,\,z\in\mathbb C\}
+\]
+\end{theorem}
+\begin{proof}
+设 $Ax=\lambda x$，写作分量形式：
+\[
+    \sum_{j=1}^na_{ij}x_j=\lambda x_i\implies (\lambda-a_{ii})x_i=\sum_{j\neq i}a_{ij}x_j
+\]
+设 $x_t$ 为 $x$ 各分量中模最大的那个，则 $x_t\neq 0$，上式取 $i=t$ 后两边同时除以 $x_t$ 并取模得：
+\[
+    |\lambda-a_{tt}|=\sum_{j\neq t}|a_{tj}|\left|\frac{x_j}{x_t}\right|\leq\sum_{j\neq t}|a_{tj}|=R_t(A)
+\]
+因此 $\lambda\in S_t$.  于是任意特征值 $\lambda\in\bigcup_{i=1}^n S_i$.
+\end{proof}
+
+\begin{remark}
+圆盘定理 1 说明，特征值 $\lambda$ 属于特征向量最大分量的下标对应的盖尔圆。
+\end{remark}
+
+\begin{theorem}[圆盘定理 2]
+设矩阵 $A$ 的 $n$ 个盖尔圆有 $k$ 个互相连通并且与其余 $n-k$ 个不相交，则这个连通区域中恰有 $k$ 个特征值。
+\end{theorem}
+\begin{remark}
+设 $A=D+B$，其中 $D$ 为对角矩阵。设 $A(t)=D+tB$，则当 $t=0$ 时，所有盖尔圆都是点，也就是特征值；当 $t$ 从 $0$ 到 $1$ 连续变化时，盖尔圆越来越大，而特征值也是\textbf{连续}变化的，所以 $t=1$ 时特征值只能在其连通区域内，不可能跳跃到不连通的另一个区域中。从这个角度也可以知道，当两个盖尔圆相切时，其特征值最多到达切点处。
+\end{remark}
+
+\begin{corollary}
+若 $n$ 阶矩阵 $A$ 的 $n$ 个盖尔圆两两互不相交（都是孤立的），则 $A$ 相似于对角矩阵。
+\end{corollary}
+
+\begin{corollary}
+设 $n$ 阶实矩阵 $A$ 的 $n$ 个盖尔圆两两互不相交，则 $A$ 的特征值全为实数。
+\end{corollary}
+
+\begin{proof}
+由于 $A$ 为实矩阵，故所有盖尔圆的圆心都在实轴上。若 $A$ 有复特征值，则必有与之关于实轴对称的共轭复对称值，与其在同一个盖尔圆中。由于盖尔圆两两互不相交，且一个孤立盖尔圆内只能有一个特征值，所以 $A$ 的特征值只能都是实数。
+\end{proof}
+
+\begin{definition}[列盖尔圆]
+设 $A\in\mathbb C^{m\times n}$，记第 $j$ 个列盖尔圆为：
+\[
+    G_j=\{z\mid |z-a_{jj}|\leq R'_j,\,z\in\mathbb C\}
+\]
+其中 $R'_j=R'_j(A)=\sum_{i\neq j}|a_{ij}|$.
+\end{definition}
+
+\begin{corollary}
+列盖尔圆有与行盖尔圆类似的圆盘定理。结合二者可知，$A$ 的所有特征值都在以下平面区域之中：
+\[
+T=\left(\bigcup_{i=1}^nS_i\right)\cap\left(\bigcup_{j=1}^nG_j\right)
+\]
+\end{corollary}
+
+\begin{theorem}
+相似矩阵的盖尔圆的圆心相同、半径不同。
+\end{theorem}
+\begin{proof}
+由于 $B=P^{-1}AP$ 的第 $i$ 行第 $j$ 列元素为 $a_{ij}p_i/p_j$，所以对于 $B$：
+\[
+    R_i=\sum_{j\neq i}\left\vert a_{ij}\cdot\frac{p_i}{p_j}\right\vert
+\]
+而圆心依旧是 $a_{ii}\cdot p_i/p_i=a_{ii}$.
+\end{proof}
+
+\begin{remark}
+这个定理可以用于隔离特征值：取 $P=\text{diag}(p_1,\ldots,p_n),\,p_i>0$，若想要缩小半径，则将对应元素设置得大一些，这样原本相交的盖尔圆就能被隔离开了。
+\end{remark}
+
+\begin{theorem}
+设 $A$ 为 $n$ 阶正规矩阵，则：
+\[
+    \rho(A)=\Vert A\Vert_2=\sqrt{\lambda_{A^HA}}
+\]
+其中 $\lambda_{A^HA}$ 为 $A^HA$ 的最大特征值。
+\end{theorem}
+\begin{proof}
+设 $A$ 的特征值为 $\lambda_1,\ldots,\lambda_n$，存在酉矩阵 $U$ 使得：
+\[
+    U^HAU=\text{diag}(\lambda_1,\ldots,\lambda_n)
+\]
+于是：
+\[
+    U^HA^HU=\text{diag}(\bar\lambda_1,\ldots,\bar\lambda_n)
+\]
+因此：
+\[
+    U^HA^HAU=\text{diag}(|\lambda_1|^2,\ldots,|\lambda_n|^2)
+\]
+故 $A^HA$ 的特征值为 $|\lambda_1|^2,\ldots,|\lambda_n|^2$，记 $\lambda_{A^HA}=\max_{1\leq i\leq n}|\lambda_i|^2$，则：
+\[
+    \Vert A\Vert_2=\sqrt{\lambda_{A^HA}}=\max_{1\leq i\leq n}|\lambda_i|=\rho(A)
+\]
+\end{proof}
+
+\begin{remark}
+由于实对称矩阵、实反对称矩阵、正交矩阵、酉矩阵、Hermite 矩阵、反 Hermite 矩阵、对角矩阵都是正规矩阵，所以它们都有性质 $\rho(A)=\Vert A\Vert_2$.
+\end{remark}
+\begin{remark}
+事实上，从上述证明过程可以看出，正规矩阵的奇异值等于特征值的模长的平方（可以一一对应上）。
+\end{remark}
+
+
+\subsection{广义特征值问题}
+
+\begin{definition}[广义特征值]
+设 $A,B$ 为 $n$ 阶方阵，若存在数 $\lambda$，使得方程 $Ax=\lambda Bx$ 存在非零解，则称 $\lambda$ 为 $A$ 相对于 $B$ 的广义特征值，$x$ 为 $A$ 相对于 $B$ 的属于广义特征值 $\lambda$ 的特征向量。
+\end{definition}
+
+\noindent\textbf{广义特征值求解}：解 $(\lambda B-A)x=0\iff\det(\lambda B-A)=0$ 即可。注意这里的特征多项式 $\det(\lambda B-A)$ 不一定是 $n$ 阶多项式，从而不一定有 $n$ 个根。
+
+\vskip 6pt \noindent\textbf{以下仅考虑 $A,B$ 是正定 Hermite 矩阵的情形}。
+
+\begin{definition}[按 $B$ 标准正交化]
+若向量系 $(x_1,\ldots,x_n)$ 满足：
+\[
+    (x_i,Bx_j)=\delta_{ij}
+\]
+称该向量系为按 $B$ 标准正交化的向量系。
+\end{definition}
+
+\begin{definition}[广义特征值的等价表述 1]
+由于 $B$ 正定，因此可逆，故：
+\[
+    Ax=\lambda Bx\implies B^{-1}Ax=\lambda x
+\]
+转化为了标准特征值问题。但一般而言 $B^{-1}A$ 不再是 Hermite 矩阵。
+\end{definition}
+
+\begin{definition}[广义特征值的等价表述 2]
+由于 $B$ 为 Hermite 矩阵，因此存在 Cholesky 分解，$B=GG^H$，其中 $G$ 满秩，于是：
+\[
+    Ax=\lambda Bx\implies Ax=\lambda GG^Hx
+\]
+令 $y=G^Hx$，则：
+\[
+    G^{-1}A(G^H)^{-1}y=\lambda y
+\]
+转化为了标准特征值问题，且 $G^{-1}A(G^H)^{-1}$ 仍然是 Hermite 矩阵，因此广义特征值为实数，设为 $\lambda_1\leq\cdots\leq\lambda_n$，且存在一组正交归一化的特征向量 $(y_1,\ldots,y_n)$，即：
+\begin{align*}
+    &G^{-1}A(G^H)^{-1}y_i=\lambda y_i\\
+    &y_i^Hy_j=\delta_{ij}
+\end{align*}
+将 $y$ 还原为 $x$，则：
+\[
+    y_i^Hy_j=(G^Hx_i)^H(G^Hx_j)=x_i^HGG^Hx_j=x_i^HBx_j=\delta_{ij}
+\]
+即 $(x_1,\ldots,x_n)$ 按 $B$ 标准正交。
+\end{definition}
+
+
+\subsection{对称矩阵特征值的极性}
+
+我们首先讨论实对称矩阵特征值的极性与 Rayleigh 商。本节中记实对称矩阵 $A$ 的特征值按大小排列为 $\lambda_1\leq\lambda_2\leq\cdots\leq\lambda_n$，对应\textbf{标准正交}特征向量系为 $p_1,p_2,\ldots,p_n$.
+
+\begin{remark}
+将 Rayleigh 商定义在实对称矩阵上是为了保证特征值一定是实数，这样才可以比较。
+\end{remark}
+
+\begin{definition}[Rayleigh 商]
+设 $A$ 是 $n$ 阶实对称矩阵，$x\in\mathbb R^n$，定义矩阵 $A$ 的 Rayleigh 商为：
+\[
+    R(x)=\frac{x^TAx}{x^Tx},\quad x\neq 0
+\]
+\end{definition}
+\begin{theorem}
+设 $A$ 为实对称矩阵，则：
+\[
+    \min_{x\neq 0}R(x)=\lambda_1,\quad\max_{x\neq 0}R(x)=\lambda_n
+\]
+\end{theorem}
+\begin{proof}[证明 1]
+任取 $x\neq 0$，依标准正交特征向量系分解 $x=c_1p_1+\cdots+c_np_n$，则：
+\[
+    x^Tx=c_1^2+\cdots+c_n^2,\quad x^TAx=c_1^2\lambda_1+\cdots+c_n^2\lambda_n
+\]
+故：
+\[
+    R(x)=k_1\lambda_1+\cdots+k_n\lambda_n,\quad\text{where}\; k_i=\frac{c_i^2}{c_1^2+\cdots+c_n^2}
+\]
+容易推出 $\lambda_1\leq R(x)\leq\lambda_n$，且 $R(p_1)=\lambda_1,\,R(p_n)=\lambda_n$.
+\end{proof}
+\begin{proof}[证明 2（梯度法）]
+取对数 $\ln R(x)=\ln (x^TAx)-\ln(x^Tx)$，求导并令为零：
+\[
+    \frac{\mathrm d\ln R(x)}{\mathrm dx}=\frac{2Ax}{x^TAx}-\frac{2x}{x^Tx}=0\implies Ax=R(x)x
+\]
+因此极值点处 $R(x)$ 为 $A$ 的特征值，$x$ 为对应特征向量。于是最小值为最小特征值 $\lambda_1$，最大值为最大特征值 $\lambda_n$.
+\end{proof}
+\begin{proof}[证明 3（拉格朗日乘子法）]
+原问题可等价转换为如下带约束优化问题：
+\[
+    \min_{x^Tx=1} x^TAx,\quad\max_{x^Tx=1} x^TAx
+\]
+引入拉格朗日函数：
+\[
+    L(x,\lambda)=x^TAx-\lambda x^Tx
+\]
+求导并令为零：
+\[
+    \frac{\partial L(x,\lambda)}{\partial x}=2Ax-2\lambda x=0\implies Ax=\lambda x
+\]
+这意味着极值点 $x$ 为 $A$ 的特征向量，$\lambda$ 是对应特征值。此时，极值正好也是 $x^TAx=\lambda x^Tx=\lambda$. 因此，原问题最小值就是 $A$ 的最小特征值 $\lambda_1$，最大值就是 $A$ 的最大特征值 $\lambda_n$.
+\end{proof}
+
+\begin{remark}
+由于 $x$ 模长不影响 $R(x)$，所以上述定理也常常写作：
+\[
+    \min_{\Vert x\Vert_2=1}x^TAx=\lambda_1,\quad\max_{\Vert x\Vert_2=1}x^TAx=\lambda_n
+\]
+下文视情况两种写法都可能出现。
+\end{remark}
+
+\begin{theorem}[Rayleigh 商中的向量扩展为矩阵]
+设 $A$ 为实对称矩阵，则对于任意的 $1\leq r\leq n$ 有：
+\[
+    \min_{X^TX=I_r}\text{tr}(X^TAX)=\lambda_1+\cdots+\lambda_r
+\]
+\end{theorem}
+\begin{proof}
+对 $A$ 作谱分解 $A=P\Lambda P^T$，其中 $P$ 为正交矩阵，$\Lambda=\text{diag}(\lambda_1,\ldots,\lambda_n)$. 记 $B=P^TX$，则问题转化为对角矩阵情形，即求证：
+\[
+    \min_{B^TB=I_r}\text{tr}(B^T\Lambda B)=\lambda_1+\cdots+\lambda_r
+\]
+记 $BB^T$ 的对角元素为 $B_{11},\ldots,B_{nn}$，则可以证明在 $B^TB=I$ 的条件下，$0\leq B_{ii}\leq 1$.  因此：
+\[
+    \text{tr}(B^T\Lambda B)=\text{tr}(\Lambda BB^T)=\lambda_1B_{11}+\cdots+\lambda_n B_{nn}
+\]
+所以这是一个关于 $B_{11},\ldots,B_{nn}$ 的线性约束下的线性问题，最小值必然在约束区域的顶点处取得。显然这个顶点应该是 $B_{11}=\cdots=B_{rr}=1$，$B_{r+1,r+1}=\cdots=B_{nn}=0$，此时取到最小值 $\lambda_1+\cdots+\lambda_r$.
+\end{proof}
+
+\begin{theorem}
+\label{thm:minmaxR}
+设 $x\in L(p_r,p_{r+1},\ldots,p_s),\,1\leq r\leq s\leq n$，则：
+\[
+    \min_{x\neq 0}R(x)=\lambda_r,\quad\max_{x\neq 0}R(x)=\lambda_s
+\]
+\end{theorem}
+\begin{proof}
+证明与前面的定理证明类似。
+\end{proof}
+\begin{remark}
+这个定理表明 Rayleigh 商在特征向量张成的子空间中的极值就是对应最大最小特征值。但是在实际应用中，特征向量张成的子空间并不好找，所以下面的 Courant-Fischer 定理只限制子空间维数为 $k$，再对所有 $k$ 维子空间求极值。
+\end{remark}
+
+\begin{theorem}[Courant-Fischer]
+设 $V_k$ 表示 $\mathbb R^n$ 中的任意一个 $k$ 维子空间，则：
+\[
+    \lambda_k=\min_{V_k}\max_{x\in V_k,x\neq0}R(x)
+\]
+或写作：
+\[
+    \lambda_k=\min_{V_k}\max_{x\in V_k,\Vert x\Vert_2=1}x^TAx
+\]
+\end{theorem}
+\begin{proof}
+取 $V_k=L(p_1,\ldots,p_k)$，根据定理 \ref{thm:minmaxR} 有：
+\[
+    \max_{x\neq 0}R(x)=\lambda_k
+\]
+因此下面只需要证明对所有 $V_k$，$\max\limits_{x\neq 0}R(x)\geq \lambda_k$.
+构造 $R^n$ 的 $n-k+1$ 维子空间 $W_k=L(p_k,p_{k+1},\ldots,p_n)$，则任一 $V_k$ 与 $W_k$ 必有交集。取非零向量 $x\in V_k\cap W_k$，设 $x=c_kp_k+\cdots+c_np_n$，则：
+\[
+    R(x)=\frac{c_k^2\lambda_k+\cdots+c_n^2\lambda_n}{c_k^2+\cdots c_n^2}\geq \lambda_k
+\]
+\end{proof}
+
+\begin{corollary}
+将 $A$ 替换成 $-A$，能立刻得到如下结论：
+\[
+    \lambda_{n-k+1}=\max_{V_k}\min_{x\in V_k,x\neq0}R(x)
+\]
+\end{corollary}
+
+\begin{theorem}
+\label{thm:AAQ}
+设实对称矩阵 $A$ 和 $A+Q$ 的特征值分别为 $\lambda_1\leq\cdots\leq\lambda_n$ 和 $\mu_1\leq\cdots\leq\mu_n$，则：
+$$
+|\lambda_i-\mu_i|\leq \Vert Q\Vert_2
+$$
+\end{theorem}
+\begin{proof}
+利用 Courant-Fischer 定理，
+\begin{align*}
+    \mu_i+\Vert Q\Vert_2&=\min_{V_i}\max_{x\in V_i,\Vert x\Vert_2=1}x^T(A+Q)x+\Vert Q\Vert_2I\\
+    &=\min_{V_i}\max_{x\in V_i,\Vert x\Vert_2=1}x^T(A+Q+\Vert Q\Vert_2I)x\\
+    &\geq\min_{V_i}\max_{x\in V_i,\Vert x\Vert_2=1}x^TAx\\
+    &=\lambda_i
+\end{align*}
+不等式是因为 $Q+\Vert Q\Vert_2I$ 为半正定矩阵。另一个方向可以进行类似的证明（用 $Q-\Vert Q\Vert_2I$ 为半负定矩阵）。
+\end{proof}
+
+\begin{remark}
+为什么 $Q+\Vert Q\Vert_2I$ 是半正定矩阵？对 $Q$ 进行谱分解 $Q=P\Lambda P^T$，则：
+\[
+    Q+\Vert Q\Vert_2I=P\Lambda P^T+\Vert\Lambda\Vert_2I=P(\Lambda +\Vert\Lambda\Vert_2I)P^T
+\]
+因此只需要证明对角矩阵 $\Lambda +\Vert\Lambda\Vert_2I$ 是半正定矩阵。由于 $\Vert\Lambda\Vert_2=\rho(\Lambda)$，因此其对角元素一定非负，这样就完成了证明。
+\end{remark}
+
+\begin{definition}[广义 Rayleigh 商]
+设 $A,B$ 为 $n$ 阶实对称矩阵，\textbf{且 $B$ 正定}，定义矩阵 $A$ 相对于矩阵 $B$ 的广义 Rayleigh 商为：
+\[
+    R(x)=\frac{x^TAx}{x^TBx},\quad x\neq 0
+\]
+\end{definition}
+\begin{theorem}
+非零向量 $x_0$ 是 $R(x)$ 的驻点的充要条件是 $x_0$ 为 $Ax=\lambda Bx$ 的属于特征值 $\lambda$ 的特征向量。
+\end{theorem}
+
+\begin{corollary}
+若 $x_0$ 是 $A$ 相对于 $B$ 的特征向量，则 $R(x_0)$ 是与之对应的特征值。
+\end{corollary}
+
+\begin{theorem}[Courant-Fischer 定理在广义特征值上的扩展]
+广义特征值问题有如下极小极大性质：
+\begin{align*}
+    \lambda_k&=\min_{V_k}\max_{x\in V_k,x\neq 0}R(x)\\
+    \lambda_{n-k+1}&=\max_{V_k}\min_{x\in V_k,x\neq0}R(x)
+\end{align*}
+\end{theorem}
+
+\begin{theorem}[矩阵奇异值的极性]
+设 $A\in\mathbb R^{m\times n}_r$ 的奇异值为：
+\[
+    0=\sigma_1=\sigma_2=\cdots=\sigma_{n-r}<\sigma_{n-r+1}\leq\cdots\leq\sigma_n
+\]
+$A+Q\in\mathbb R^{m\times n}_{r'}$ 的奇异值为：
+\[
+    0=\tau_1=\tau_2=\cdots=\tau_{n-r'}<\tau_{n-r'+1}\leq\cdots\leq\tau_n
+\]
+则有：
+\[
+    |\sigma_i-\tau_i|\leq \Vert Q\Vert_2\quad(i=1,2,\ldots,n)
+\]
+\end{theorem}
+\begin{remark} 
+对比定理 \ref{thm:AAQ}。
+\end{remark}
+
+
+\subsection{矩阵的直积及其应用}
+
+\begin{definition}[直积 / Kronecker 积]
+设 $A=(a_{ij})\in\mathbb C^{m\times n}$，$B=(b_{ij})\in\mathbb C^{p\times q}$，则称 $A$ 与 $B$ 的直积（Kronecker 积）为：
+\[
+    A\otimes B=
+    \begin{bmatrix}
+    a_{11}B&a_{12}B&\cdots&a_{1n}B\\
+    a_{21}B&a_{22}B&\cdots&a_{2n}B\\
+    \vdots&\vdots&\ddots&\vdots\\
+    a_{m1}B&a_{m2}B&\cdots&a_{mn}B\\
+    \end{bmatrix}\in\mathbb C^{mp\times nq}
+\]
+换句话说，$a_{ij}b_{kl}$ 放在 $A\otimes B$ 的 $((i-1)m+k,(j-1)n+l)$ 处。
+\end{definition}
+
+\begin{property}
+$k(A\otimes B)=(kA)\otimes B=A\otimes(kB)$
+\end{property}
+
+\begin{property}
+若 $A,B$ 同阶，则 $(A+B)\otimes C=A\otimes C+B\otimes C$，$C\otimes(A+B)=C\otimes A+C\otimes B$.
+\end{property}
+
+\begin{property}
+$(A\otimes B)\otimes C=A\otimes(B\otimes C)$
+\end{property}
+\begin{proof}[证明思路]
+证明 $a_{ij}b_{kl}c_{uv}$ 在同一个位置。
+\end{proof}
+
+\begin{property}
+$(A\otimes B)(C\otimes D)=AC\otimes BD$
+\end{property}
+\begin{proof}[证明思路]
+直接展开。
+\end{proof}
+
+\begin{corollary}
+$(A_1\otimes\cdots\otimes A_l)(B_1\otimes\cdots\otimes B_l)=A_1B_1\otimes\cdots\otimes A_lB_l$
+\end{corollary}
+
+\begin{corollary}
+$(A_1\otimes B_1)\cdots(A_l\otimes B_l)=(A_1\cdots A_l)\otimes(B_1\cdots B_l)$
+\end{corollary}
+
+\begin{property}
+$(A\otimes B)^{-1}=A^{-1}\otimes B^{-1}$
+\end{property}
+\begin{proof}
+$(A\otimes B)(A^{-1}\otimes B^{-1})=(AA^{-1})\otimes(BB^{-1})=I$.
+\end{proof}
+
+\begin{property}
+若 $A,B$ 为三角矩阵，则 $A\otimes B$ 也是三角矩阵。
+\end{property}
+
+\begin{property}
+$(A\otimes B)^H=A^H\otimes B^H$
+\end{property}
+
+\begin{property}
+设 $A_{m\times m}$ 和 $B_{n\times n}$ 都是酉矩阵，则 $A\otimes B$ 也是酉矩阵。
+\end{property}
+
+\begin{property}
+$\text{rank}(A\otimes B)=\text{rank}(A)\cdot\text{rank}(B)$
+\end{property}
+\begin{proof}    
+对 $A,B$ 作奇异值分解 $A=U_A\Sigma_AV_A^H,\,B=U_B\Sigma_BV_B^H$，则：
+\[
+    A\otimes B=(U_A\otimes U_B)(\Sigma_A\otimes\Sigma_B)(V_A\otimes V_B)^H
+\]
+按定义易知 $\Sigma_A\otimes \Sigma_B$ 有 $\text{rank}(A)\cdot\text{rank}(B)$ 个非零元。证毕。
+\end{proof}
+
+\begin{property}
+$\text{tr}(A\otimes B)=\text{tr}(A)\cdot\text{tr}(B)$.
+\end{property}
+\begin{proof}[证明思路]
+直接展开。
+\end{proof}
+
+\begin{property}
+对于\textbf{方阵} $A\in\mathbb C^{m\times m},\,B\in\mathbb C^{n\times n}$，有 $A\otimes B$ 相似于 $B\otimes A$.
+\end{property}
+
+\begin{definition}[拉直算子]
+设 $A=(a_1,a_2,\ldots,a_n)$，定义\textbf{列拉直}为：
+\[
+    \text{vec}(A)=\begin{bmatrix}a_1\\a_2\\\vdots\\a_n\end{bmatrix}=\sum_{j=1}^ne_j\otimes (Ae_j)
+\]
+类似地，设 $A=\begin{bmatrix}a_1^T\\a_2^T\\\vdots\\a_m^T\end{bmatrix}$，定义\textbf{行拉直}为：
+\[
+    \overline{\text{vec}}(A)=\begin{bmatrix}a_1\\a_2\\\vdots\\a_m\end{bmatrix}=\sum_{i=1}^me_i\otimes(A^Te_i)
+\]
+显然有：$\overline{\text{vec}}(A)=\text{vec}(A^T)$.
+\end{definition}
+
+\begin{theorem}
+设 $A\in\mathbb C^{m\times n},X\in\mathbb C^{n\times p},B\in\mathbb C^{p\times q}$，则：
+\begin{align*}
+    &\text{vec}(AXB)=(B^T\otimes A)\text{vec}(X)\\
+    &\overline{\text{vec}}(AXB)=(A\otimes B^T)\overline{\text{vec}}(X)
+\end{align*}
+\end{theorem}
+\begin{proof}
+这里采用代数形式，采用展开形式也能证：
+\begin{align*}
+    \text{vec}(AXB)&=\sum_{j=1}^qe_j\otimes(AXBe_j)=\sum_{j=1}^qe_j\otimes\left(AX\left(\sum_{k=1}^pe_ke_k^T\right)Be_j\right)\\
+    &=\sum_{j=1}^q\sum_{k=1}^pe_j\otimes (AXe_k{\color{purple}e_k^TBe_j})=\sum_{k=1}^p\sum_{j=1}^q(e_j{\color{purple}e_j^TB^Te_k})\otimes (AXe_k)\\
+    &=\sum_{k=1}^p(B^Te_k)\otimes (AXe_k)=\sum_{k=1}^p(B^T\otimes A)(e_k\otimes Xe_k)=(B^T\otimes A)\text{vec}(X)
+\end{align*}
+推导过程中注意紫色部分是一个数，可以转置并移动到直积的另一边去。
+行展开类似，或者直接取转置即可。
+\end{proof}
+
+\begin{definition}[以矩阵直积定义方幂]
+设 $A\in\mathbb C^{m\times n}$，定义 $A^{[1]}=A,\,A^{[k+1]}=A^{[k]}\otimes A,\,k=1,2,\ldots$.
+\end{definition}
+
+\begin{property}
+$(AB)^{[k]}=A^{[k]}B^{[k]}$. 利用直积的性质 4 容易证明。
+\end{property}
+
+\begin{definition}
+对二元函数 $f(x,y)=\displaystyle\sum_{i,j=0}^lc_{ij}x^iy^j$ 及矩阵 $A\in\mathbb C^{m\times m},\,B\in\mathbb C^{n\times n}$，定义：
+\[
+    f(A,B)=\sum_{i,j=0}^lc_{ij}A^{i}\otimes B^{j}
+\]
+\end{definition}
+
+\begin{theorem}[二元函数 $f(A,B)$ 的特征值]
+设 $A_{m\times m}$ 的特征值为 $\lambda_1,\lambda_2,\ldots,\lambda_m$，$B_{n\times n}$ 的特征值为 $\mu_1,\mu_2,\ldots,\mu_n$，则 $f(A,B)$ 的全体特征值为 $f(\lambda_i,\mu_j),\,i=1,2,\ldots,m,j=1,2,\ldots,n$.
+\end{theorem}
+\begin{proof}
+将 $A,B$ 相似上三角化 $A=P_AR_AP_A^{-1},\,B=P_BR_BP_B^{-1}$，其中 $R_A,R_B$ 为上三角矩阵。那么 $A^i=P_AR_A^iP_A^{-1},\,B=P_BR_B^iP_B^{-1}$，于是：
+\begin{align*}
+    f(A,B)&=\sum_{i,j=0}^lc_{ij}(P_AR_A^iP_A^{-1})\otimes(P_BR_B^jP_B^{-1})\\
+    &=\sum_{i,j=0}^lc_{ij}(P_A\otimes P_B)(R_A^i\otimes R_B^j)(P_A^{-1}\otimes P_B^{-1})\\
+    &=(P_A\otimes P_B)\left(\sum_{i,j=0}^lc_{ij}R_A^i\otimes R_B^j\right)(P_A\otimes P_B)^{-1}\\
+\end{align*}
+由于 $R_A^i\otimes R_B^j$ 是上三角矩阵，其对角元 $\{\lambda_r^i\mu_s^j\mid r=1,\ldots,m,s=1,\ldots,n\}$ 就是所有特征值，故 $f(A,B)$ 全体特征值为：
+\[
+    \text{diag}\left(\sum_{i,j=0}^{l}c_{ij}R_A^i\otimes R_B^j\right)=\left\{\sum_{i,j=0}^lc_{ij}\lambda_r^i\mu_s^j\mid r,s\right\}=\{f(\lambda_r,\mu_s)\mid r,s\}
+\]
+\end{proof}
+
+
+\begin{corollary}
+$A\otimes B$ 的全体特征值为 $\{\lambda_i\mu_j\mid i=1,\ldots,m,j=1,\ldots,n\}$.
+\end{corollary}
+
+\begin{corollary}
+$\det(A\otimes B)=(\det A)^n(\det B)^m$.
+\end{corollary}
+\begin{proof}
+$\det(A\otimes B)=\prod_{i=1}^m\prod_{j=1}^n\lambda_i\mu_j=(\prod_{i=1}^m\lambda_i^n)(\prod_{j=1}^n\mu_j^m)=(\det A)^n(\det B)^m$.
+\end{proof}
+
+\begin{corollary}
+$\text{tr}(A\otimes B)=(\text{tr}A)(\text{tr}B)$.
+\end{corollary}
+
+下面我们来看矩阵方程及相关定理。
+
+\begin{theorem}
+\[
+    \sum_{i=1}^lA_iXB_i=F\quad\text{有解}\quad\iff\quad
+    \overline{\text{vec}}(F)\in R\left(\sum_{i=1}^lA_i\otimes B_i^T\right)
+\]
+\end{theorem}
+\begin{proof}
+两边同时进行行拉直，得：
+\[
+    \sum_{i=1}^l(A_i\otimes B_i^T)\overline{\text{vec}}(X)=\overline{\text{vec}}(F)
+\]
+于是结论显然成立。
+\end{proof}
+
+\begin{remark}
+遇到形如 $\displaystyle\sum_{i=1}^lA_iXB_i=F$ 的矩阵方程，其中 $X$ 为未知量，考虑两边同时行拉直。
+\end{remark}
+
+\begin{theorem}
+设 $A_{m\times m}$ 的特征值为 $\lambda_1,\ldots,\lambda_m$，$B_{n\times n}$ 的特征值为 $\mu_1,\ldots,\mu_n$，则方程 $AX+XB=F$ 有唯一解的充要条件是：
+\[
+    \lambda_i+\mu_j\neq 0,\,(i=1,\ldots,m,\,j=1,\ldots,n)
+\]
+\end{theorem}
+\begin{proof}
+两边同时进行行拉直，得：
+\[
+    (A\otimes I+I\otimes B^T)\overline{\text{vec}}(X)=\overline{\text{vec}}(F)
+\]
+要使该方程有唯一解，则系数矩阵特征值非零。根据上文的定理，$A\otimes I+I\otimes B^T$ 的特征值为 $\lambda_i+\mu_j$，因此命题成立。证毕。
+\end{proof}
+
+\begin{corollary}
+$AX+XB=O$ 有非零解的充要条件是存在 $i_0,j_0$ 使得 $\lambda_{i_0}+\mu_{j_0}=0$.
+\end{corollary}
+
+\begin{corollary}
+$AX-XA=O$ 一定有非零解。
+\end{corollary}
+
+\begin{theorem}
+设 $A_{m\times m}$ 的特征值为 $\lambda_1,\ldots,\lambda_m$，$B_{n\times n}$ 的特征值为 $\mu_1,\ldots,\mu_n$，则方程 $\displaystyle\sum_{k=0}^lA^kXB^k=F$ 有唯一解的充要条件是：
+\[
+    1+(\lambda_i\mu_j)+\cdots+(\lambda_i\mu_j)^l\neq0
+\]
+\end{theorem}
+\begin{proof}
+两边同时进行行拉直，得：
+\[
+    \sum_{k=0}^l\left(A^k\otimes (B^k)^T\right)\overline{\text{vec}}(X)=\overline{\text{vec}}(F)
+\]
+要使该方程有唯一解，则系数矩阵特征值非零。取 $f(x,y)=\displaystyle\sum_{k=0}^lx^ky^k$，则系数矩阵为 $f(A,B^T)$，因此特征值为 $f(\lambda_i,\mu_j)=1+(\lambda_i\mu_j)+\cdots+(\lambda_i\mu_j)^l$.
+\end{proof}
