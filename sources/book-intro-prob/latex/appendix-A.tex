@@ -1,0 +1,274 @@
+\section{常见随机变量}
+\label{sec:random-variables}
+
+本节总结常见的随机变量及其期望、方差、矩母函数和性质，其中离散随机变量包括伯努利、二项、泊松、几何和超几何随机变量，连续随机变量包括均匀、指数和正态随机变量。
+
+
+\paragraph{伯努利随机变量}
+
+\begin{itemize}[itemsep=1ex]
+    \item 记号：$X\sim B(1,p)$
+    \item 实例：抛掷一枚硬币，硬币向上概率为 $p$，$X$ 为是否向上。
+    \item PMF：$p_X(k)=\begin{cases}p,&k=1\\1-p,&k=0\end{cases}$
+    \item 期望：$\E X=p$
+    \item 方差：$\var X=p(1-p)$
+    \item 矩母函数：$M_X(s)=1-p+pe^s$
+\end{itemize}
+
+\begin{proof}[矩母函数的推导]
+\[
+M_X(s)=\E[e^{sX}]=(1-p)\cdot e^{0}+p\cdot e^{s}=1-p+pe^s
+\]
+\end{proof}
+
+\paragraph{二项随机变量}
+
+\begin{itemize}[itemsep=1ex]
+    \item 记号：$X\sim B(n,p)$
+    \item 实例：抛掷 $n$ 枚硬币，每枚硬币向上概率均为 $p$，$X$ 为向上次数。
+    \item PMF：$p_X(k)=\displaystyle\binom{n}{k}p^k(1-p)^{n-k},\quad k=0,1,2,\ldots,n$
+    \item 期望：$\E X=np$
+    \item 方差：$\var X=np(1-p)$
+    \item 矩母函数：$M_X(s)=(1-p+pe^s)^n$
+\end{itemize}
+
+\begin{proof}[期望的推导]
+\begin{align*}
+\E X&=\sum_{k=0}^{n}k\binom{n}{k}p^k(1-p)^{n-k}=\sum_{k=1}^nn\binom{n-1}{k-1}p^k(1-p)^{n-k}\\
+&=np\sum_{k=0}^{n-1}\binom{n-1}{k}p^k(1-p)^{n-1-k}=np(p+1-p)^{n-1}=np
+\end{align*}
+其中用到了恒等式 $\displaystyle\binom{n}{k}=\binom{n-1}{k-1}\frac{n}{k}$ 和二项式定理。
+\end{proof}
+\begin{proof}[二阶矩的推导]
+\begin{align*}
+\E X^2&=\sum_{k=0}^{n}k^2\binom{n}{k}p^k(1-p)^{n-k}=\sum_{k=1}^nnk\binom{n-1}{k-1}p^k(1-p)^{n-k}\\
+&=\sum_{k=1}^nn\binom{n-1}{k-1}p^k(1-p)^{n-k}+\sum_{k=1}^nn(k-1)\binom{n-1}{k-1}p^k(1-p)^{n-k}\\
+&=np+np\sum_{k=0}^{n-1}k\binom{n-1}{k}p^{k}(1-p)^{n-1-k}=np+np(n-1)p
+\end{align*}
+\end{proof}
+\begin{proof}[方差的推导]
+\[
+\var X=\E X^2-(\E X)^2=np+n(n-1)p^2-n^2p^2=np-np^2=np(1-p)
+\]
+\end{proof}
+\begin{proof}[矩母函数的推导]
+\[
+M_X(s)=\E[e^{sX}]=\sum_{k=0}^n\binom{n}{k}p^k(1-p)^{n-k}e^{sk}=(1-p+pe^s)^n
+\]
+\end{proof}
+
+\paragraph{泊松随机变量}
+
+\begin{itemize}[itemsep=1ex]
+    \item 记号：$X\sim P(\lambda)$
+    \item 实例：一个城市一天中发生车祸次数。
+    \item PMF：$p_X(k)=e^{-\lambda}\dfrac{\lambda^k}{k!},\quad k=0,1,\ldots$
+    \item 期望：$\E X=\lambda$
+    \item 方差：$\var X=\lambda$
+    \item 矩母函数：$M_X(s)=e^{\lambda(e^s-1)}$
+    \item 性质：取 $\lambda=np$，则当 $n\to\infty$ 时，泊松分布近似二项分布。
+\end{itemize}
+
+\begin{proof}[期望的推导]
+\[
+\E X=\sum_{k=0}^\infty ke^{-\lambda}\frac{\lambda^k}{k!}=e^{-\lambda}\sum_{k=1}^{\infty}\frac{\lambda^k}{(k-1)!}=\lambda e^{-\lambda}\sum_{k=0}^{\infty}\frac{\lambda^k}{k!}=\lambda
+\]
+其中用到了 $e^x$ 的泰勒展开。
+\end{proof}
+\begin{proof}[二阶矩的推导]
+\begin{align*}
+\E X^2&=\sum_{k=0}^\infty k^2e^{-\lambda}\frac{\lambda^k}{k!}=e^{-\lambda}\sum_{k=1}^{\infty}k\frac{\lambda^k}{(k-1)!}\\
+&=e^{-\lambda}\sum_{k=1}^{\infty}\frac{\lambda^k}{(k-1)!}+e^{-\lambda}\sum_{k=2}^{\infty}\frac{\lambda^k}{(k-2)!}\\
+&=e^{-\lambda}\lambda e^\lambda+e^{-\lambda}\lambda^2 e^\lambda=\lambda+\lambda^2
+\end{align*}
+\end{proof}
+\begin{proof}[方差的推导]
+\[
+\var X=\E X^2-(\E X)^2=\lambda+\lambda^2-\lambda^2=\lambda
+\]
+\end{proof}
+\begin{proof}[矩母函数的推导]
+\[
+M_X(s)=\E[e^{sX}]=\sum_{k=0}^\infty e^{-\lambda}\frac{\lambda^k}{k!}e^{sk}=e^{-\lambda}\sum_{k=0}^\infty \frac{(\lambda e^s)^k}{k!}=e^{\lambda(e^s-1)}
+\]
+\end{proof}
+\begin{proof}[证明泊松分布近似二项分布]
+取 $\lambda=np$，则：
+\begin{align*}
+\lim_{n\to\infty}\binom{n}{k}p^k(1-p)^{nk}&=\lim_{n\to\infty}\frac{n^{\underline{k}}}{k!}\cdot\frac{\lambda^k}{n^k}\left(1-\frac{\lambda}{n}\right)^{n-k}\\
+&=\frac{\lambda^k}{k!}\lim_{n\to\infty}\frac{n^{\underline{k}}}{n^k}\cdot\left(1-\frac{\lambda}{n}\right)^{n-k}\\
+&=\frac{\lambda^k}{k!}\cdot 1\cdot\lim_{n\to\infty}\left[\left(1-\frac{\lambda}{n}\right)^{-\frac{n}{\lambda}}\right]^{-\frac{\lambda(n-k)}{n}}\\
+&=\frac{\lambda^k}{k!}e^{-\lambda}
+\end{align*}
+\end{proof}
+
+\paragraph{几何随机变量}
+
+\begin{itemize}[itemsep=1ex]
+    \item 记号：$X\sim G(p)$
+    \item 实例：抛掷一枚硬币直至向上，硬币向上概率为 $p$，$X$ 为抛掷次数。
+    \item PMF：$p_X(k)=(1-p)^{k-1}p,\quad k=1,2,\ldots$
+    \item 期望：$\E X=\dfrac{1}{p}$
+    \item 方差：$\var X=\dfrac{1-p}{p^2}$
+    \item 矩母函数：$M_X(s)=\dfrac{pe^s}{1-(1-p)e^s}$
+    \item 无记忆性：$\Pb(X>n+m\vert X>n)=\Pb(X>m)$
+\end{itemize}
+
+\begin{proof}[期望的推导]
+设：
+\[
+f(x)=\sum_{k=1}^\infty k x^{k-1}=\sum_{k=1}^\infty (x^k)'=\left(\sum_{k=1}^\infty x^k\right)'=\left(\frac{x}{1-x}\right)'=\frac{1}{(1-x)^2}
+\]
+则：
+\[
+\E X=\sum_{k=1}^\infty k(1-p)^{k-1}p=pf(1-p)=\frac{1}{p}
+\]
+\end{proof}
+\begin{proof}[二阶矩的推导]
+设：
+\[
+g(x)=\sum_{k=1}^\infty k^2x^{k-1}=\sum_{k=1}^\infty k(x^k)'=\left(\sum_{k=1}^\infty kx^k\right)'=(xf(x))'=\left(\frac{x}{(1-x)^2}\right)'=\frac{1+x}{(1-x)^3}
+\]
+则：
+\[
+\E X^2=\sum_{k=1}^\infty k^2(1-p)^{k-1}p=pg(1-p)=p\cdot\frac{2-p}{p^3}=\frac{2-p}{p^2}
+\]
+\end{proof}
+\begin{proof}[方差的推导]
+\[
+\var X=\E X^2-(\E X)^2=\frac{2-p}{p^2}-\frac{1}{p^2}=\frac{1-p}{p^2}
+\]
+\end{proof}
+\begin{proof}[矩母函数的推导]
+\[
+M_X(s)=\E[e^{sX}]=\sum_{k=1}^\infty(1-p)^{k-1}pe^{sk}=pe^s\sum_{k=0}^\infty((1-p)e^s)^{k}=\frac{pe^s}{1-(1-p)e^s}
+\]
+\end{proof}
+\begin{proof}[证明无记忆性]
+首先计算尾概率：
+\[
+\Pb(X>n)=\sum_{k=n+1}^\infty(1-p)^{k-1}p=p\frac{(1-p)^n}{1-(1-p)}=(1-p)^n
+\]
+于是：
+\[
+\Pb(X>n+m\vert X>n)=\frac{P(X>n+m)}{P(X>n)}=\frac{(1-p)^{n+m}}{(1-p)^n}=(1-p)^m=\Pb(X>m)
+\]
+\end{proof}
+
+\paragraph{超几何随机变量}
+
+\begin{itemize}[itemsep=1ex]
+    \item 实例：一盒内有 $N$ 个球，其中 $M$ 个白球 $N-M$ 个黑球，从中无放回地取 $n$ 个球且每次取球独立，$X$ 表示取出白球个数。
+    \item PMF：$p_X(k)=\dfrac{\binom{M}{k}\binom{N-M}{n-k}}{\binom{N}{n}},\quad k=0,1,\ldots,n$
+    \item 期望：$\E X=\dfrac{nM}{N}$
+    \item 方差：$\var X=\dfrac{nM}{N}\left(1-\dfrac{M}{N}\right)\dfrac{N-n}{N-1}$
+    \item 性质：当 $N\to\infty$ 时，超几何分布近似二项分布。
+\end{itemize}
+
+\begin{proof}[期望的推导]
+\[
+\E X=\sum_kk\frac{\binom{M}{k}\binom{N-M}{n-k}}{\binom{N}{n}}=\frac{1}{\binom{N}{n}}\sum_k M\binom{M-1}{k-1}\binom{N-M}{n-k}=\frac{M}{\binom{N}{n}}\binom{N-1}{n-1}=\frac{nM}{N}
+\]
+其中用到了恒等式 $\displaystyle\binom{N}{n}=\binom{N-1}{n-1}\frac{N}{n}$ 和范德蒙德卷积式 $\displaystyle\sum_k\binom{r}{k}\binom{s}{n-k}=\binom{r+s}{n}$.
+\end{proof}
+\begin{proof}[二阶矩的推导]
+\begin{align*}
+\E X^2&=\sum_kk^2\frac{\binom{M}{k}\binom{N-M}{n-k}}{\binom{N}{n}}=\frac{M}{\binom{N}{n}}\sum_k k\binom{M-1}{k-1}\binom{N-M}{n-k}\\
+&=\frac{M}{\binom{N}{n}}\sum_k\binom{M-1}{k-1}\binom{N-M}{n-k}+\frac{M}{\binom{N}{n}}\sum_k (k-1)\binom{M-1}{k-1}\binom{N-M}{n-k}\\
+&=\frac{M}{\binom{N}{n}}\binom{N-1}{n-1}+\frac{M}{\binom{N}{n}}(M-1)\binom{N-2}{n-2}=\frac{nM}{N}+\frac{M(M-1)n(n-1)}{N(N-1)}
+\end{align*}
+\end{proof}
+\begin{proof}[方差的推导]
+\[
+\var X=\E X^2-(\E X)^2=\frac{nM}{N}+\frac{M(M-1)n(n-1)}{N(N-1)}-\frac{n^2M^2}{N^2}=\frac{nM}{N}\left(1-\frac{M}{N}\right)\frac{N-n}{N-1}
+\]
+\end{proof}
+
+
+\paragraph{均匀随机变量}
+
+\begin{itemize}[itemsep=1ex]
+    \item 记号：$X\sim U(a,b)$
+    \item PDF：$f_X(x)=\dfrac{1}{b-a},\quad a\leqslant x\leqslant b$
+    \item 期望：$\E X=\dfrac{a+b}{2}$
+    \item 方差：$\var X=\dfrac{(b-a)^2}{12}$
+    \item 矩母函数：$M_X(s)=\dfrac{1}{b-a}\cdot\dfrac{e^{sb}-e^{sa}}{s}$
+\end{itemize}
+
+\begin{proof}[矩母函数的推导]
+\[
+M_X(s)=\E[e^{sX}]=\int_a^b\frac{e^{sx}}{b-a}\mathrm dx=\frac{1}{b-a}\cdot\frac{1}{s}\int_{a/s}^{b/s}e^{sx}\mathrm d(sx)=\frac{1}{b-a}\cdot\frac{e^{sb}-e^{sa}}{s}
+\]
+\end{proof}
+
+\paragraph{指数随机变量}
+
+\begin{itemize}[itemsep=1ex]
+    \item 记号：$X\sim E(\lambda)$
+    \item PDF：$f_X(x)=\lambda e^{-\lambda x},\quad x\geqslant0$
+    \item 期望：$\E X=\dfrac{1}{\lambda}$
+    \item 方差：$\var X=\dfrac{1}{\lambda^2}$
+    \item 矩母函数：$M_X(s)=\dfrac{\lambda}{\lambda-s}\;(s<\lambda)$
+    \item 无记忆性：$\Pb(X>x+y\vert X>x)=\Pb(X>y)$
+\end{itemize}
+
+\begin{proof}[期望的推导]
+\[
+\E X=\int_0^{+\infty}x\lambda e^{-\lambda x}\mathrm dx=-\int_0^{+\infty}x\mathrm d e^{-\lambda x}=\int_0^{+\infty}e^{-\lambda x}\mathrm dx=-\frac{1}{\lambda}\left.e^{-\lambda x}\right|_{0}^{+\infty}=\frac{1}{\lambda}
+\]
+\end{proof}
+\begin{proof}[二阶矩的推导]
+\[
+\E X^2=\int_0^{+\infty} x^2\lambda e^{-\lambda x}\mathrm dx=-\int_0^{+\infty}x^2\mathrm de^{-\lambda x}=2\int_0^{+\infty}x e^{-\lambda x}\mathrm dx=\frac{2}{\lambda^2}
+\]
+\end{proof}
+\begin{proof}[方差的推导]
+\[
+\var X=\E X^2-(\E X)^2=\frac{2}{\lambda^2}-\frac{1}{\lambda^2}=\frac{1}{\lambda^2}
+\]
+\end{proof}
+\begin{proof}[矩母函数的推导]
+\[
+M_X(s)=\E[e^{sX}]=\int_0^\infty\lambda e^{-\lambda x}e^{sx}\mathrm dx=\lambda\int_0^\infty e^{-(\lambda-s)x}\mathrm dx=\frac{\lambda}{\lambda-s}\quad(s<\lambda)
+\]
+\end{proof}
+\begin{proof}[证明无记忆性]
+首先计算尾概率：
+\[
+\Pb(X>x)=\int_x^{+\infty}\lambda e^{-\lambda t}\mathrm dt=\left.e^{-\lambda t}\right|_{+\infty}^x=e^{-\lambda x}
+\]
+于是：
+\[
+\Pb(X>x+y\vert X>x)=\frac{\Pb(X>x+y)}{\Pb(X>x)}=\frac{e^{-\lambda(x+y)}}{e^{-\lambda x}}=e^{-\lambda y}=\Pb(X>y)
+\]
+\end{proof}
+
+\paragraph{正态随机变量}
+
+\begin{itemize}[itemsep=1ex]
+    \item 记号：$X\sim N(\mu,\sigma^2)$
+    \item PDF：$f_X(x)=\dfrac{1}{\sqrt{2\pi}\sigma}\exp\left({-\dfrac{(x-\mu)^2}{2\sigma^2}}\right)$
+    \item 期望：$\E X=\mu$
+    \item 方差：$\var X=\sigma^2$
+    \item 矩母函数：$M_X(s)=\exp\left({\dfrac{\sigma^2s^2}{2}+\mu s}\right)$
+\end{itemize}
+
+\begin{proof}[证明标准正态分布的归一性]
+由于：
+\begin{align*}
+\left[\int_{-\infty}^{+\infty}\frac{1}{\sqrt{2\pi}}\exp\left({-\frac{x^2}{2}}\right)\mathrm dx\right]^2&=\frac{1}{2\pi}\int_{-\infty}^{+\infty}\int_{-\infty}^{+\infty}\exp\left({-\frac{x^2+y^2}{2}}\right)\mathrm dx\mathrm dy\\
+&=\frac{1}{2\pi}\int_0^{2\pi}\mathrm d\theta\int_{0}^{+\infty}\exp\left({-\frac{r^2}{2}}\right)r\mathrm dr\\
+&=\int_0^{+\infty}\exp\left({-\frac{r^2}{2}}\right)\mathrm d\left(\frac{r^2}{2}\right)\\
+&=\left.\exp\left({-\frac{r^2}{2}}\right)\right|_{+\infty}^0=1
+\end{align*}
+故：
+\[
+\int_{-\infty}^{+\infty}\frac{1}{\sqrt{2\pi}}\exp\left({-\frac{x^2}{2}}\right)\mathrm dx=1
+\]
+\end{proof}
+% \begin{proof}[矩母函数的推导]
+% \begin{align*}
+% M_X(s)=\E[e^{sX}]&=\int_{-\infty}^{+\infty}\frac{1}{\sqrt{2\pi}\sigma}e^{-\frac{(x-\mu)^2}{2\sigma^2}}e^{sx}\mathrm dx=\frac{1}{\sqrt{2\pi}\sigma}\int_{-\infty}^{+\infty}e^{-\frac{(x-\mu)^2}{2\sigma^2}+sx}\mathrm dx\\
+% &=\frac{1}{\sqrt{2\pi}\sigma}\int_{-\infty}^{+\infty}e^{-\frac{(x-\mu-s\sigma^2)^2}{2\sigma^2}}\mathrm dx
+% \end{align*}
+% \end{proof}

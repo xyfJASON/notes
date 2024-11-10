@@ -17,16 +17,12 @@
         }
         .category {
             color: gray;
+            text-align: center;
         }
         .course-item {
-            display: flex;
-            justify-content: space-between;
+/*            display: flex;*/
+/*            justify-content: space-between;*/
             margin: 10px 0;
-        }
-        .course-title {
-            margin-right: 10px;
-            flex-grow: 1;
-/*            border-bottom: 1px dotted #000;*/
         }
         .note-link {
             margin-left: 5px;
@@ -40,7 +36,7 @@
 
     <h2 style="text-align: center">Notes</h2>
 
-    <br/><hr/><br/>
+    <hr style="margin: 20px 0"/>
 
     <h3 class="category">Graduate Courses</h3>
 
@@ -64,70 +60,101 @@
     </p> -->
 
     <p class="course-item">
-        <span class="course-title">矩阵论, UCAS, lectured by <a href="https://people.ucas.ac.cn/~0002038">Shiwei Ye</a>.</span>
-        <a class="note-link" href="sources/matr/矩阵论.pdf">[note]</a>
+        <strong>矩阵论</strong>,
+        UCAS,
+        lectured by <a href="https://people.ucas.ac.cn/~0002038">Shiwei Ye</a>.
+        &ensp;|&ensp;
+        <a class="note-link" href="sources/matr/矩阵论.pdf">[PDF]</a>
+        <a class="note-link" href="https://github.com/xyfJASON/notes/tree/main/sources/matr/latex">[LaTeX]</a>
     </p>
 
-    <br/><hr style="border-top: 1px dashed #a2a9b6"/><br/>
+    <!-- <hr style="border: 1px dashed #a2a9b6; margin: 20px 0"/> -->
 
-    <h3 class="category">Undergraduate Courses</h3>
+    <!-- <h3 class="category">Undergraduate Courses</h3>
 
     <p class="semester">Spring, 2022</p>
 
     <p class="course-item">
-        <span class="course-title">信息论, HITsz, lectured by <a href="https://faculty.hitsz.edu.cn/huazhongyun">Zhongyun Hua</a>.</span>
-        <a class="note-link" href="sources/info/信息论.pdf">[note]</a>
+        信息论,
+        HITsz,
+        lectured by <a href="https://huazhongyun.github.io/">Zhongyun Hua</a>.
+        &ensp;|&ensp;
+        <a class="note-link" href="sources/info/信息论.pdf">[PDF]</a>
     </p>
 
     <p class="semester">Fall, 2021</p>
 
     <p class="course-item">
-        <span class="course-title">密码学基础, HITsz, lectured by <a href="https://faculty.hitsz.edu.cn/jianglin">Lin Jiang</a>.</span>
-        <a class="note-link" href="sources/cryp/密码学基础.pdf">[note]</a>
+        密码学基础,
+        HITsz,
+        lectured by <a href="https://faculty.hitsz.edu.cn/jianglin">Lin Jiang</a>.
+        &ensp;|&ensp;
+        <a class="note-link" href="sources/cryp/密码学基础.pdf">[PDF]</a>
     </p>
 
     <p class="semester">Spring, 2021</p>
 
     <p class="course-item">
-        <span class="course-title">计算方法, HITsz, lectured by <a href="https://faculty.hitsz.edu.cn/yangyunyun">Yunyun Yang</a>.</span>
-        <a class="note-link" href="sources/nume/计算方法思维导图.pdf">[mindmap]</a>
+        计算方法,
+        HITsz,
+        lectured by <a href="https://faculty.hitsz.edu.cn/yangyunyun">Yunyun Yang</a>.
+        &ensp;|&ensp;
+        <a class="note-link" href="sources/nume/计算方法思维导图.pdf">[PDF]</a>
     </p>
 
     <p class="course-item">
-        <span class="course-title">数理逻辑, HITsz, lectured by Shijun Ren.</span>
-        <a class="note-link" href="sources/logic/数理逻辑题型一览.pdf">[note]</a>
+        数理逻辑,
+        HITsz,
+        lectured by Shijun Ren.
+        &ensp;|&ensp;
+        <a class="note-link" href="sources/logic/数理逻辑题型一览.pdf">[PDF]</a>
     </p>
 
     <p class="semester">Fall, 2020</p>
 
     <p class="course-item">
-        <span class="course-title">概率论与数理统计, HITsz, lectured by <a href="https://faculty.hitsz.edu.cn/ouyangshunxiang">Shunxiang Ouyang</a>.</span>
-        <a class="note-link" href="sources/prob/概率论与数理统计.pdf">[note]</a>
+        概率论与数理统计,
+        HITsz,
+        lectured by <a href="https://faculty.hitsz.edu.cn/ouyangshunxiang">Shunxiang Ouyang</a>.
+        &ensp;|&ensp;
+        <a class="note-link" href="sources/prob/概率论与数理统计.pdf">[PDF]</a>
         <a class="note-link" href="sources/prob/常见随机变量.pdf">[common r.v.]</a>
     </p>
 
     <p class="course-item">
-        <span class="course-title">算法设计与分析, HITsz, lectured by <a href="https://faculty.hitsz.edu.cn/hezhenyu">Zhenyu He</a>.</span>
-        <a class="note-link" href="sources/algo/算法设计与分析证明集合.pdf">[note]</a>
+        算法设计与分析,
+        HITsz,
+        lectured by <a href="https://faculty.hitsz.edu.cn/hezhenyu">Zhenyu He</a>.
+        &ensp;|&ensp;
+        <a class="note-link" href="sources/algo/算法设计与分析证明集合.pdf">[PDF]</a>
     </p>
 
     <p class="semester">Fall, 2019</p>
 
     <p class="course-item">
-        <span class="course-title">集合论与图论, HITsz, lectured by <a href="https://faculty.hitsz.edu.cn/tanglinlin">Linlin Tang</a>.</span>
-        <a class="note-link" href="sources/setg/集合论与图论定理总结.pdf">[note]</a>
+        集合论与图论,
+        HITsz,
+        lectured by <a href="https://faculty.hitsz.edu.cn/tanglinlin">Linlin Tang</a>.
+        &ensp;|&ensp;
+        <a class="note-link" href="sources/setg/集合论与图论定理总结.pdf">[PDF]</a>
         <a class="note-link" href="sources/setg/图论思维导图.pdf">[mindmap]</a>
-    </p>
+    </p> -->
 
+    <!-- <hr style="border: 1px dashed #a2a9b6; margin: 20px 0"/>
 
-    <!-- <br/><hr style="border-top: 1px dashed #a2a9b6"/><br/>
+    <h3 class="category">Online Courses</h3> -->
 
-    <h3 class="category">Online Courses</h3>
-
-    <br/><hr style="border-top: 1px dashed #a2a9b6"/><br/>
+    <hr style="border: 1px dashed #a2a9b6; margin: 20px 0"/>
 
     <h3 class="category">Books</h3>
-     -->
+
+    <p class="course-item">
+        <strong>概率导论</strong>,
+        Dimitri P. Bertsekas and John N. Tsitsiklis.
+        &ensp;|&ensp;
+        <a class="note-link" href="sources/book-intro-prob/note.pdf">[PDF]</a>
+        <a class="note-link" href="https://github.com/xyfJASON/notes/tree/main/sources/book-intro-prob/latex">[LaTeX]</a>
+    </p>
 
 </div>
 

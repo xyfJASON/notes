@@ -1,0 +1,68 @@
+\section{二元正态分布}
+\label{sec:two-normal}
+
+\begin{definition}[二元正态分布]
+若随机变量 $X,Y$ 有如下联合概率密度函数：
+\[
+f_{X,Y}(x,y)=\frac{1}{2\pi\sigma_1\sigma_2\sqrt{1-\rho^2}}\exp\left[-\frac{1}{2(1-\rho^2)}\left(\frac{(x-\mu_1)^2}{\sigma_1^2}-\frac{2\rho(x-\mu_1)(y-\mu_2)}{\sigma_1\sigma_2}+\frac{(y-\mu_2)^2}{\sigma_2^2}\right)\right]
+\]
+则称 $X,Y$ 服从参数为 $\mu_1,\mu_2,\sigma_1,\sigma_2,\rho$ 的二元正态分布。
+\end{definition}
+
+\begin{com}
+矩阵形式：设 $\mathbf X=\begin{pmatrix}X\\Y\end{pmatrix},\boldsymbol\mu=\begin{pmatrix}\mu_1\\\mu_2\end{pmatrix},\Sigma=\begin{pmatrix}\sigma_1^2&\rho\sigma_1\sigma_2\\\rho\sigma_1\sigma_2&\sigma_2^2\end{pmatrix}$，则：
+\[
+p_{\mathbf X}(\mathbf x)=\frac{1}{2\pi{|\Sigma|}^{1/2}}\exp\left(-\frac{1}{2}(\mathbf x-\boldsymbol\mu)^T\Sigma^{-1}(\mathbf x-\boldsymbol\mu)\right)
+\]
+这一形式可以推广到多元正态分布。
+\end{com}
+
+\begin{theorem}[二元正态分布的密度分解]
+对定义式进行变形可以得到：
+\[
+f_{X,Y}(x,y)=\frac{1}{\sqrt{2\pi}\sigma_1}\exp\left(-\frac{(x-\mu_1)^2}{2\sigma_1^2}\right)\cdot\frac{1}{\sqrt{2\pi}\sigma_2\sqrt{1-\rho^2}}\exp\left(-\frac{\left[y-\left(\mu_2+\rho\frac{\sigma_2}{\sigma_1}(x-\mu_1)\right)\right]^2}{2\sigma_2^2(1-\rho^2)}\right)
+\]
+注意到，前一部分是 $N(\mu_1,\sigma_1)$ 的概率密度函数，后一部分是 $N\left(\mu_2+\rho\frac{\sigma_2}{\sigma_1}(x-\mu_1),\sigma_2^2(1-\rho^2)\right)$ 的概率密度函数。又由于：
+\[
+f_{X,Y}(x,y)=f_X(x)f_{Y|X}(y|x)
+\]
+所以事实上后一部分是就是 $f_{Y|X}(y|x)$. 
+\end{theorem}
+
+\begin{theorem}[二元正态分布的边缘分布]
+根据密度分解容易知道，二元正态分布的边缘分布仍是正态分布，且 $X\sim N(\mu_1,\sigma_1^2),\quad Y\sim N(\mu_2,\sigma_2^2)$.
+\end{theorem}
+
+\begin{theorem}[二元正态分布的协方差与相关系数]
+运用密度分解，可以计算：
+\begin{align*}
+\text{cov}(X,Y)&=\mathbb E[(X-\mathbb EX)(Y-\mathbb EY)]\\
+&=\iint_{\R^2}(x-\mu_1)(y-\mu_2)f_{X,Y}(x,y)\mathrm dx\mathrm dy\\
+&=\int_{-\infty}^{+\infty}(x-\mu_1)f_X(x)\mathrm dx\int_{-\infty}^{+\infty}(y-\mu_2)f_{Y|X}(y|x)\mathrm dy\\
+&=\int_{-\infty}^{+\infty}(x-\mu_1)f_X(x)\mathrm dx\left[\int_{-\infty}^{+\infty}yf_{Y|X}(y|x)-\mu_2\right]\\
+&=\int_{-\infty}^{+\infty}(x-\mu_1)f_X(x)\mathrm dx\Big[\mathbb E[Y|X=x]-\mu_2\Big]\\
+&=\int_{-\infty}^{+\infty}(x-\mu_1)f_X(x)\mathrm dx\Big[\rho\frac{\sigma_2}{\sigma_1}(x-\mu_1)\Big]\\
+&=\rho\frac{\sigma_2}{\sigma_1}\int_{-\infty}^{+\infty}(x-\mu_1)^2f_X(x)\mathrm dx\\
+&=\rho\frac{\sigma_2}{\sigma_1}\var X\\
+&=\rho\sigma_1\sigma_2
+\end{align*}
+由此可得相关系数：
+$$
+\rho(X,Y)=\frac{\cov(X,Y)}{\sqrt{\var X}\sqrt{\var Y}}=\rho
+$$
+也即二元正态分布定义中的参数 $\rho$ 就是其相关系数。
+\end{theorem}
+
+\begin{theorem}[二元正态分布的独立性]
+设 $(X,Y)$ 服从二元正态分布，则 $X,Y$ 独立当且仅当 $\rho=0$. 
+\end{theorem}
+\begin{proof}
+由于 $X,Y$ 独立蕴含着 $X,Y$ 不相关，而后者等价于相关系数 $\rho=0$，所以独立 $\implies\rho=0$. 又设 $\rho=0$，则：
+$$
+p_{X,Y}(x,y)=\frac{1}{\sqrt{2\pi}\sigma_1}\exp\left(-\frac{(x-\mu_1)^2}{2\sigma_1^2}\right)\cdot \frac{1}{\sqrt{2\pi}\sigma_2}\exp\left(-\frac{(y-\mu_2)^2}{2\sigma_2^2}\right)=p_X(x)p_Y(y)
+$$
+所以 $\rho=0\implies$ 独立。
+\end{proof}
+\begin{corollary}
+对于二元正态分布而言，独立和不相关是等价的。
+\end{corollary}

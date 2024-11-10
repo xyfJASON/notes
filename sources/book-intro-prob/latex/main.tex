@@ -1,0 +1,114 @@
+\PassOptionsToPackage{quiet}{fontspec}
+\documentclass{article}
+
+
+%%%%%%%%%%%%%%%%%%% usepackage %%%%%%%%%%%%%%%%%%%
+
+\usepackage[a4paper, margin=1in]{geometry}
+
+\usepackage{ctex}
+\setCJKmainfont[Mapping = fullwidth-stop]{FandolSong-Regular}
+
+\usepackage{amsthm, amsfonts, amsmath, amssymb}
+\usepackage{mathtools}
+\usepackage{centernot}
+\usepackage{arydshln}
+
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage[hidelinks]{hyperref}
+\usepackage{framed}
+\usepackage{float}
+\usepackage[bottom]{footmisc}
+\usepackage{caption}
+
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable}
+
+\usepackage{xcolor}
+\usepackage{multicol}
+\usepackage{multirow}
+
+\usepackage{enumitem}
+\setlist{noitemsep}
+
+
+%%%%%%%%%%%%%%%%%%%%%% math %%%%%%%%%%%%%%%%%%%%%%
+
+\theoremstyle{definition}
+\newtheorem{theorem}{定理}[section]
+\newtheorem{corollary}[theorem]{推论}
+\newtheorem{lemma}[theorem]{引理}
+\newtheorem*{property}{性质}
+
+\theoremstyle{definition}
+\newtheorem{definition}{定义}[section]
+\newtheorem{example}{例}[section]
+\newtheorem{exercise}{练习}
+
+\theoremstyle{remark}
+\newtheorem*{remark}{注解}
+\newtheorem*{note}{注意}
+\newtheorem*{com}{注释}
+
+\tcolorboxenvironment{example}{colback=blue!5!white, boxrule=0.5pt, breakable}
+\tcolorboxenvironment{remark}{colback=green!10!white, boxrule=0.5pt, breakable}
+\tcolorboxenvironment{note}{colback=yellow!10!white, boxrule=0.5pt, breakable}
+\tcolorboxenvironment{proof}{colback=black!5!white, boxrule=0.5pt, breakable}
+
+
+%%%%%%%%%%%%%%%%%% new command %%%%%%%%%%%%%%%%%%%
+\newcommand{\ind}{\mathrel{\perp\!\!\!\!\perp}}
+\newcommand{\cov}{\mathrm{cov}}
+\newcommand{\var}{\mathrm{var}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Pb}{\mathrm{P}}
+\newcommand\norm[1]{\Vert#1\Vert}
+\renewcommand{\leq}{\leqslant}
+\renewcommand{\geq}{\geqslant}
+\newcommand{\argmin}{\mathop{\arg\min}}
+\newcommand{\argmax}{\mathop{\arg\max}}
+
+\newcommand{\TODO}[1]{{\color{red}{TODO:#1}}}
+
+
+%%%%%%%%%%%%%%%%%%%%%% main %%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\title{
+    \rule{\linewidth}{2.0pt} \\
+    \LARGE \textbf{\uppercase{笔记·《概率导论》}}
+    \rule{\linewidth}{1.5pt} \\
+    \vspace*{14\baselineskip}
+}
+\author{
+    Yifeng Xu \\
+    中国科学院计算技术研究所 \\
+    中国科学院大学
+}
+\date{}
+
+\maketitle \newpage
+
+\nocite{*}
+\input{chapter0} \newpage
+\tableofcontents \newpage
+\input{chapter1} \newpage
+\input{chapter2} \newpage
+\input{chapter3} \newpage
+\input{chapter4} \newpage
+\input{chapter5} \newpage
+\input{chapter6} \newpage
+
+\appendix
+\input{appendix-A} \newpage
+\input{appendix-B} \newpage
+\input{appendix-C} \newpage
+
+\bibliographystyle{unsrt}
+\bibliography{references}
+
+\end{document}
