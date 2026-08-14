@@ -1,0 +1,140 @@
+\section{初始神经网络}
+\label{sec:chapter7}
+
+\subsection{神经元模型}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\linewidth]{figs/Chap_7_neuron.png}
+\end{figure}
+
+一个神经元就是一个函数，根据输入节点信息以及其权重，得到一个输出信息，即：
+\[
+h_\theta(x)=f(\theta, x)
+\]
+这里 $\theta=\begin{bmatrix}\theta_0\\\theta_1\\\vdots\\\theta_n\end{bmatrix},\,x=\begin{bmatrix}x_0\\x_1\\\vdots\\x_n\end{bmatrix}$.  
+
+> 注意：上图省略了 $x_0\equiv 1$ 这一偏置项。
+
+$h_\theta(x)$ 也称作激活函数，一般可以采取 $\text{sigmoid}$ 函数 $h_\theta(x)=g(\theta^Tx)=\frac{1}{1+e^{-\theta^Tx}}$. 
+
+
+
+\subsection{神经网络}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{figs/Chap_7_neuron_network.png}
+\end{figure}
+
+神经网络是好几层的神经元连接在一起的集合。第一层被称作输入层，最后一层被称作输出层，中间其他层被称作隐藏层
+
+> 注意：上图依旧省略了 $x_0(a_0^{(1)})\equiv a_0^{(2)}\equiv1$ 偏置项。
+
+我们把第 $i$ 层到第 $i+1$ 层的传导单独拿出来分析：设 $s_i$ 表示第 $i$ 层的神经元数量（\textbf{不包含偏置项}），那么对于第 $i+1$ 层的第 $k$ 个神经元，有一个 $\theta^{(i)}_k$ 与之对应，使得：$a^{(i+1)}_k=h_{\theta^{(i)}_k}(\hat a^{(i)})=g\left({\theta_k^{(i)}}^T\hat a^{(i)}\right)$. 这里我用 $\hat a^{(i)}\in\mathbb R^{s_i+1}$ 表示加上偏置项后的 $a^{(i)}$. 我们可以把这写作矩阵形式：
+\[
+a^{(i+1)}=g\left(\Theta^{(i)}\hat a^{(i)}\right)
+\]
+这里的 $\Theta^{(i)}\in\mathbb R^{s_{i+1}\times(s_i+1)}$. 
+
+\begin{note}
+其他很多地方会把偏置项对应的参数向量 $b$ 单独拿出来，把上面的式子写作类似于：
+\[
+a^{(i+1)}=g\left(\Theta^{(i)}a^{(i)}+b^{(i)}\right)
+\]
+的形式。这里 $\Theta^{(i)}\in\mathbb R^{s_{i+1}\times s_i},\,b\in\mathbb R^{s_{i+1}}$. 我这里依旧沿用吴恩达教授的写法习惯。
+\end{note}
+
+
+\subsection{神经网络实现门电路}
+
+通过这个例子能够直观地理解神经网络中参数的作用。
+
+考虑一个输入层有 $2$ 个神经元（不包括偏置项）且取值 $\in\{0,1\}$、输出层有 $1$ 个神经元且取值 $\in\{0,1\}$ 的神经网络。如果我们将其参数设置为：$\Theta^{(1)}=\begin{bmatrix}-30\\20\\20\end{bmatrix}$，那么我们有：
+
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{0.4\linewidth}{cYc}
+      \toprule
+      输入 1 & 输入 2 & 输出 \\
+      \midrule
+      0 & 0 & $g(-30)\approx 0$ \\
+      0 & 1 & $g(-10)\approx 0$ \\
+      1 & 0 & $g(-10)\approx 0$ \\
+      1 & 1 & $g(10)\approx 1$  \\
+      \bottomrule
+    \end{tabularx}
+\end{table}
+
+于是我们实现了一个与门的功能！
+
+类似的，我们可以实现或门、非门，然后组合使用与、或、非门，可以用多层神经网络实现异或、同或门等其他电路功能。
+
+
+\subsection{实现}
+
+这一节的作业依旧是对手写数字进行识别，但是不要求我们自己寻找参数 $\Theta$，而是在 `ex3weights.mat` 中给出了。我们只需要根据神经网络的原理进行前向传播。
+
+\begin{lstlisting}[language=Python]
+import numpy as np
+from scipy.io import loadmat
+import matplotlib.pyplot as plt
+import matplotlib
+
+m = 5000
+n = 401
+
+data = loadmat('ex3data1.mat')
+X = data['X'] # (5000, 400)
+X = np.hstack((np.ones((m, 1)), X)) # (5000, 401)
+y = data['y'] # (5000, 1)
+
+data = loadmat('ex3weights.mat')
+Theta1 = data['Theta1'] # (25, 401)
+Theta2 = data['Theta2'] # (10, 26)
+
+def sigmoid(z):
+	return 1 / (1 + np.exp(-z))
+
+def predict(x):
+	"""
+	x: (401, )
+	"""
+	a1 = x.reshape((401, 1))
+	a2 = np.matmul(Theta1, a1)
+	a2 = sigmoid(a2) # (25, 1)
+	a2 = np.vstack((np.ones((1, 1)), a2)) # (26, 1)
+	a3 = np.matmul(Theta2, a2)
+	a3 = sigmoid(a3)
+	return a3.argmax(axis=0)[0] + 1
+
+Sum = np.zeros(11)
+Hit = np.zeros(11)
+Accuracy = np.zeros(11)
+hit = 0
+for id in range(5000):
+	Sum[y[id][0]] += 1
+	if predict(X[id, :].T) == y[id][0]:
+		Hit[y[id][0]] += 1
+		hit += 1
+for i in range(1, 11):
+	Accuracy[i] = Hit[i] / Sum[i]
+	print(str(i)+":", str(Accuracy[i] * 100)+"%")
+print("tot:", str(hit / 5000 * 100)+"%")
+\end{lstlisting}
+
+各数字准确率和总准确率如下：
+
+\begin{table}[H]
+    \centering
+    \small
+    \begin{tabularx}{\linewidth}{lYYYYYYYYYYY}
+    \toprule
+    数字 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 0 & Total \\
+    \midrule
+    准确率 & 98.2\% & 97.0\% & 96.0\% & 96.8\% & 98.4\% & 98.6\% & 97.0\% & 98.2\% & 95.8\% & 99.2\% & 97.5\% \\
+    \bottomrule
+    \end{tabularx}
+\end{table}
+
+注：直接采用训练集进行测试其实是不严谨的做法。

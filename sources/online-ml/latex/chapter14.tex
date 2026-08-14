@@ -1,0 +1,164 @@
+\section{推荐系统}
+\label{sec:chapter14}
+
+\subsection{基于内容的推荐算法}
+
+以向用户推荐电影为例，假设我们对每部电影构建了一个特征向量，并且已知每个用户对某些电影的评分，那么对于某个用户而言，我们可以将电影的特征向量看作自变量 $x$，他的评分看作因变量 $y$，然后做\textbf{线性回归}。
+
+具体地，设一共有 $n_u$ 个用户，$n_m$ 部电影，第 $i$ 部电影的特征向量为 $x^{(i)}\in\mathbb R^{n+1}$（包含偏置项），$r(i,j)$ 表示用户 $j$ 是否对第 $i$ 部电影进行了评分，如果评了分，设评分为 $y^{(i,j)}$. 那么对于第 $j$ 个用户，线性回归的目标就是学习一个参数 $\theta^{(j)}$，使得：
+\[
+\min_{\theta^{(j)}}\frac{1}{2}\sum_{i:r(i,j)=1}\left((\theta^{(j)})^Tx^{(i)}-y^{(i,j)}\right)^2+\frac{\lambda}{2}\sum_{k=1}^{n}(\theta_k^{(j)})^2
+\]
+由于每个用户的线性回归都是独立的，所以我们可以放在一起训练：
+\[
+\min_{\theta^{(1)},\ldots,\theta^{(n_u)}}J(\theta^{(1)},\ldots,\theta^{(n_u)}):=\frac{1}{2}\sum_{j=1}^{n_u}\sum_{i:r(i,j)=1}\left((\theta^{(j)})^Tx^{(i)}-y^{(i,j)}\right)^2+\frac{\lambda}{2}\sum_{j=1}^{n_u}\sum_{k=1}^{n}(\theta_k^{(j)})^2
+\]
+训练过程可能用到导函数：
+\[
+\frac{\partial J}{\partial\theta^{(j)}_k}=\sum_{i:r(i,j)=1}\left((\theta^{(j)})^Tx^{(i)}-y^{(i,j)}\right)\theta^{(j)}_k+\lambda\theta_k^{(j)}[k>0]
+\]
+那么对于一个特征向量为 $x$ 的电影，用户 $j$ 对它的评分的预测值就是：$(\theta^{(j)})^Tx$. 
+
+基于内容的推荐算法的缺点在于，我们需要知道每部电影的特征向量，然而这一点通常很难做到。所以我们需要不是基于内容的推荐算法。
+
+
+\subsection{协同过滤算法}
+
+\paragraph{初始版本}
+
+现在我们不知道每部电影的特征向量，但是我们可以询问用户以得到用户的参数 $\theta^{(j)}$（譬如用户对不同类型电影的偏好），然后反过来，用 $\theta^{(j)}$ 去训练出 $x^{(i)}$，得到每部电影的特征。具体地，对于第 $i$ 部电影，我们可以学习它的特征 $x^{(i)}$，使得：
+\[
+\min_{\theta^{(j)}}\frac{1}{2}\sum_{j:r(i,j)=1}\left((\theta^{(j)})^Tx^{(i)}-y^{(i,j)}\right)^2+\frac{\lambda}{2}\sum_{k=1}^{n}(x_k^{(i)})^2
+\]
+由于每部电影的线性回归是独立的，所以我们可以放在一起训练：
+\[
+\min_{x^{(1)},\ldots,x^{(n_m)}}J(x^{(1)},\ldots,x^{(n_m)}):=\frac{1}{2}\sum_{i=1}^{n_m}\sum_{j:r(i,j)=1}\left((\theta^{(j)})^Tx^{(i)}-y^{(i,j)}\right)^2+\frac{\lambda}{2}\sum_{i=1}^{n_m}\sum_{k=1}^{n}(x_k^{(i)})^2
+\]
+训练过程可能用到导函数：
+\[
+\frac{\partial J}{\partial x^{(i)}_k}=\sum_{j:r(i,j)=1}\left((\theta^{(j)})^Tx^{(i)}-y^{(i,j)}\right)\theta^{(i)}_k+\lambda x_k^{(i)}[k>0]
+\]
+
+总结一下，已知 $\theta^{(j)}$，我们可以学习 $x^{(i)}$；已知 $x^{(i)}$，我们可以学习 $\theta^{(j)}$. 于是我们有了一个大胆的想法——随机化一个 $\theta^{(j)}$，学习出 $x^{(i)}$，再用学习出的 $x^{(i)}$ 去学习 $\theta^{(j)}$，再用新的 $\theta^{(j)}$ 去学习 $x^{(i)}$……如此\textbf{反复迭代}，最终得到稳定的电影特征和用户参数。这就是最初始版本的协同过滤算法。
+
+
+\paragraph{改进版本}
+
+事实上，我们没有反复迭代的必要。观察用 $\theta^{(j)}$ 训练 $x^{(i)}$ 的优化目标和用 $x^{(i)}$ 训练 $\theta^{(j)}$ 的优化目标，我们可以发现，它们的非正则化项其实是相同的，都是：$\sum\limits_{(i,j):r(i,j)=1}\left((\theta^{(j)})^Tx^{(i)}-y^{(i,j)}\right)^2$. 所以，我们将两个优化目标综合起来，优化以下函数即可：
+
+\begin{align*}
+&\min_{x^{(1)},\ldots,x^{(n_m)},\theta^{(1)},\ldots,\theta^{(n_u)}}J(x^{(1)},\ldots,x^{(n_m)},\theta^{(1)},\ldots,\theta^{(n_u)})\\
+=&\frac{1}{2}\sum_{(i,j):r(i,j)=1}\left((\theta^{(j)})^Tx^{(i)}-y^{(i)}\right)^2+\frac{\lambda}{2}\sum_{i=1}^{n_m}\sum_{k=1}^n(x^{(i)}_k)^2+\frac{\lambda}{2}\sum_{j=1}^{n_u}\sum_{k=1}^n(\theta^{(j)}_k)^2
+\end{align*}
+
+值得注意的是，在综合起来之前，$n$ 是我们人为选定的特征维度数，是一个定值；而现在，$n$ 变成了一个超参数，因此我们也\textbf{没有必要加上偏置项}，所以这里 $x^{(i)}\in\mathbb R^n,\theta^{(j)}\in\mathbb R^n$. 
+
+上式的导函数为：
+\begin{align*}
+&\frac{\partial J}{\partial\theta^{(j)}_k}=\sum_{i:r(i,j)=1}\left((\theta^{(j)})^Tx^{(i)}-y^{(i,j)}\right)\theta^{(j)}_k+\lambda\theta_k^{(j)}\\
+&\frac{\partial J}{\partial x^{(i)}_k}=\sum_{j:r(i,j)=1}\left((\theta^{(j)})^Tx^{(i)}-y^{(i,j)}\right)x^{(i)}_k+\lambda x_k^{(i)}
+\end{align*}
+我们现在可以梯度下降或者用其他算法（如 $\text{LBFGS}$ 等）完成优化了。
+
+
+\paragraph{向量化版本}
+
+为了代码的运行效率，将该算法向量化是必要的。
+
+构建矩阵 $Y:=\begin{bmatrix}y^{(i,j)}\end{bmatrix}\in\mathbb R^{n_m\times n_u}$，即第 $i$ 行第 $j$ 列表示用户 $j$ 对电影 $i$ 的评分；矩阵 $X:=\begin{bmatrix}(x^{(1)})^T\\ \vdots\\ (x^{(n_m)})^T\end{bmatrix}\in\mathbb R^{n_m\times n}$，即第 $i$ 行表示电影 $i$ 的特征向量；矩阵 $\Theta:=\begin{bmatrix}(\theta^{(1)})^T\\ \vdots\\ (\theta^{(n_u)})^T\end{bmatrix}\in\mathbb R^{n_u\times n}$，即第 $j$ 行表示用户 $j$ 的参数向量。如此，线性回归的预测值可以构成矩阵：
+\[
+X\Theta^T\in\mathbb R^{n_m\times n_u}
+\]
+利用 \texttt{numpy} 的语法可以简单地写出代价函数及其导函数的向量化版本，详见代码。
+
+
+\subsection{代码实现}
+
+\begin{lstlisting}[language=Python]
+import numpy as np
+from scipy.io import loadmat
+from scipy.optimize import minimize
+
+def J(Y, R, X, Theta, lamb):
+	return 0.5 * (np.sum(((X @ Theta.T - Y) * R) ** 2) + \
+		lamb * np.sum(X ** 2) + lamb * np.sum(Theta ** 2))
+
+def partJ(Y, R, X, Theta, lamb):
+	return np.concatenate((
+		( ((X @ Theta.T - Y) * R) @ Theta + lamb * X ).flatten(), 
+		( ((X @ Theta.T - Y) * R).T @ X + lamb * Theta ).flatten()
+	))
+
+def train(Y, R, lamb, n):
+	(n_m, n_u) = Y.shape
+	xt = np.empty(n*n_m+n*n_u)
+	return minimize(fun = lambda xt, Y, R, lamb : J(Y, R, xt[:n*n_m].reshape((n_m, n)), \
+													xt[n*n_m:].reshape((n_u, n)), lamb), 
+					x0 = np.random.randn(n*n_m+n*n_u), 
+					args = (Y, R, lamb), 
+					method = 'TNC', 
+					jac = lambda xt, Y, R, lamb: partJ(Y, R, xt[:n*n_m].reshape((n_m, n)), \
+													xt[n*n_m:].reshape((n_u, n)), lamb)
+					)
+
+def predict(Y, R, xt, n):
+	(n_m, n_u) = Y.shape
+	X, Theta = xt[:n*n_m].reshape((n_m, n)), xt[n*n_m:].reshape((n_u, n))
+	return X @ Theta.T
+
+data = loadmat('ex8_movies.mat')
+Y = data['Y']
+R = data['R']
+Ymean = Y.mean(axis=1, keepdims=True)
+res = train(Y-Ymean, R, lamb=1, n=50)
+print(res)
+np.save('xt.npy', res.x)
+xt = res.x
+\end{lstlisting}
+
+优化结果为：
+
+\begin{lstlisting}
+     fun: 11078.825074101991
+     jac: array([ 4.75273039e-07, -8.33595791e-07, -4.85091646e-07, ...,
+        9.67607422e-07,  3.80539749e-06,  1.86386969e-06])
+ message: 'Converged (|f_n-f_(n-1)| ~= 0)'
+    nfev: 14671
+     nit: 463
+  status: 1
+ success: True
+       x: array([ 0.30269431, -1.3577984 , -0.19821756, ...,  0.12718836,
+       -0.40793964, -0.60753772])
+\end{lstlisting}
+
+用该参数找到第一个用户预测评分最高的 $10$ 部电影：
+
+\begin{lstlisting}[language=Python]
+xt = np.load('xt.npy')
+pred = predict(Y, R, xt, n=50) + Ymean
+movie_list = []
+with open('movie_ids.txt', encoding='latin-1') as file:
+	for line in file:
+		movie_list.append(' '.join(line.strip().split(' ')[1: ]))
+movie_list = np.array(movie_list)
+idx = np.argsort(pred[:, 0])[::-1]
+print('Top 10 movies for user 1:')
+for movie in movie_list[idx][:10]:
+	print(movie)
+\end{lstlisting}
+
+结果为：
+
+\begin{lstlisting}
+Top 10 movies for user 1:
+Titanic (1997)
+In the Name of the Father (1993)
+Philadelphia (1993)
+Duck Soup (1933)
+Ice Storm, The (1997)
+Saint, The (1997)
+William Shakespeare's Romeo and Juliet (1996)
+Boot, Das (1981)
+People vs. Larry Flynt, The (1996)
+Manhattan (1979)
+\end{lstlisting}

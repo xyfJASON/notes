@@ -1,0 +1,153 @@
+\section{逻辑回归之多分类（数字识别）}
+\label{sec:chapter6}
+
+\subsection{数据读入与显示}
+
+给定的数据是 \texttt{.mat} 格式的，使用 \texttt{scipy} 的 \texttt{loadmat} 方法可以读入数据：
+
+\begin{lstlisting}[language=Python]
+import numpy as np
+from scipy.io import loadmat
+
+data = loadmat('ex3data1.mat')
+print(data)
+print(data['X'].shape)
+print(data['y'].shape)
+```
+
+```
+{'__header__': b'MATLAB 5.0 MAT-file, Platform: GLNXA64, Created on: Sun Oct 16 13:09:09 2011', '__version__': '1.0', '__globals__': [], 'X': array([[0., 0., 0., ..., 0., 0., 0.],
+       [0., 0., 0., ..., 0., 0., 0.],
+       [0., 0., 0., ..., 0., 0., 0.],
+       ...,
+       [0., 0., 0., ..., 0., 0., 0.],
+       [0., 0., 0., ..., 0., 0., 0.],
+       [0., 0., 0., ..., 0., 0., 0.]]), 'y': array([[10],
+       [10],
+       [10],
+       ...,
+       [ 9],
+       [ 9],
+       [ 9]], dtype=uint8)}
+(5000, 400)
+(5000, 1)
+\end{lstlisting}
+
+文件中一共有 $5000$ 个数据，每个数据的输入是一个长为 $400$ 的向量，由 $20\times 20$ 的灰度矩阵压缩而来；输出是一个数字，表示这个数字是多少。
+
+> 注意：由于 `MATLAB` 或者 `Octave` 的一些原因，$0$ 被标记为了 $10$，我们用 `python` 时可以把 $10$ 换回成 $0$；另外，数据是按列压缩的，还原回 $20\times20$ 的矩阵后其实转置了一下，这里提前转置回去方便后续编码。
+
+\begin{lstlisting}[language=Python]
+data = loadmat('ex3data1.mat')
+X = data['X']
+X = np.transpose(X.reshape((5000, 20, 20)), [0, 2, 1]).reshape(5000, 400)
+y = data['y']
+y[y==10] = 0
+\end{lstlisting}
+
+现在我们随机挑选 $100$ 个图像显示出来：
+
+\begin{lstlisting}[language=Python]
+def show_a_number(num, ax):
+	"""
+	num.shape: (400, )
+	"""
+	ax.matshow(num.reshape((20, 20)), cmap=matplotlib.cm.binary)
+	ax.axis('off')
+
+fig, ax = plt.subplots(10, 10)
+for i in range(10):
+	for j in range(10):
+		id = np.random.randint(0, 5000)
+		show_a_number(X[id, :], ax[i][j])
+plt.show()
+\end{lstlisting}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figs/Chap_6_Figure_0.png}
+\end{figure}
+
+
+\subsection{多分类}
+
+这里采用「一对多」方式完成多分类，也就是说对每一类单独训练，最后挑选概率最大的那一类视为结果。
+
+沿用上一节写好的矩阵形式的正则化逻辑回归代码，进行 $10$ 次分类即可。
+
+记得给 $X$ 每一行前加上一个 $1$. 
+
+\begin{lstlisting}[language=Python]
+import numpy as np
+from scipy.io import loadmat
+import matplotlib.pyplot as plt
+import matplotlib
+
+lamb = 1
+alpha = 0.1
+iteration = 10000
+m = 5000
+n = 401
+
+data = loadmat('ex3data1.mat')
+X = data['X']
+X = np.transpose(X.reshape((m, 20, 20)), [0, 2, 1]).reshape(m, 400)
+X = np.hstack((np.ones((m, 1)), X))
+y = data['y']
+y[y==10] = 0
+
+def h(Theta, x):
+	return 1 / (1 + np.exp(-np.matmul(Theta.T, x)[0][0]))
+
+def h_(Theta, X):
+	return 1 / (1 + np.exp(-np.matmul(X, Theta)))
+
+def J_reg(Theta, X, y):
+	tmp = h_(Theta, X)
+	return (-(np.matmul(y.T, np.log(tmp)) + np.matmul(1 - y.T, np.log(1 - tmp))) / m\
+		 + lamb / 2 / m * np.matmul(Theta.T, Theta))[0][0]
+
+def partJ_reg(Theta, X, y):
+	return (np.matmul(X.T, h_(Theta, X) - y) + lamb * np.vstack((np.zeros((1, 1)), Theta[1:, :]))) / m
+
+def GradientDescent(X, y):
+	Theta = np.zeros((n, 1))
+	for t in range(iteration):
+		Theta = Theta - alpha * partJ_reg(Theta, X, y)
+	return Theta
+
+def classify(k):
+	y_ = y.copy()
+	y_[y==k] = 1
+	y_[y!=k] = 0
+	Theta = GradientDescent(X, y_)
+	return Theta
+
+Theta = np.zeros((10, n))
+for k in range(10):
+	Theta[k, :] = classify(k).flatten()
+	print("Trained for:", k)
+
+np.savetxt('theta.txt', Theta, delimiter=',')
+\end{lstlisting}
+
+现在 `theta.txt` 中装入了我们训练好的 Theta，接下来我们就可以用它来进行预测了：
+
+\begin{lstlisting}[language=Python]
+def predict(Theta, x):
+	return np.matmul(Theta, x).argmax(axis=0)
+\end{lstlisting}
+
+直接计算每个数字的准确率以及总准确率（其实这样不严谨，详见第九篇），得到结果：
+
+\begin{table}[H]
+    \centering
+    \small
+    \begin{tabularx}{\linewidth}{lYYYYYYYYYYY}
+    \toprule
+    数字 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & Total \\
+    \midrule
+    准确率 & 99.0\% & 97.8\% & 88.2\% & 90.0\% & 93.4\% & 89.4\% & 97.0\% & 93.8\% & 91.4\% & 91.2\% & 93.1\% \\
+    \bottomrule
+    \end{tabularx}
+\end{table}

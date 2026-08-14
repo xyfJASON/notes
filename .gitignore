@@ -1,0 +1,22 @@
+.DS_Store
+_site/
+
+# Ignore unfinished notes, but track online-ml.
+sources/*
+!sources/online-ml/
+!sources/online-ml/**
+
+# Generated LaTeX output.
+sources/online-ml/latex/main.pdf
+**/*.aux
+**/*.bbl
+**/*.bcf
+**/*.blg
+**/*.fdb_latexmk
+**/*.fls
+**/*.log
+**/*.out
+**/*.run.xml
+**/*.synctex.gz
+**/*.toc
+**/*.xdv

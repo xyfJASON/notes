@@ -1,0 +1,64 @@
+\section{异常检测}
+\label{sec:chapter13}
+
+\subsection{多元正态分布}
+
+多元正态分布的概率密度函数：
+\[
+p(x;\mu,\Sigma)=\frac{1}{(2\pi)^{n/2}|\Sigma|^{1/2}}\exp\left(-\frac{1}{2}(x-\mu)^T\Sigma^{-1}(x-\mu)\right)
+\]
+其中，$x\in\mathbb R^n$ 是 $n$ 维随机变量，$\mu\in\mathbb R^n$ 是 $x$ 的均值，$\Sigma\in\mathbb R^{n\times n}$ 是协方差矩阵。
+
+特别地，当 $x$ 的各个维度不相关时，上述联合概率密度函数等于各分量的概率密度函数之积，即：
+\[
+p(x;\mu,\Sigma)=\prod_{i=1}^np(x_i;\mu_i,\sigma_i^2)
+\]
+
+
+\subsection{异常检测}
+
+异常检测的原理非常简单：假设有正常的数据集 $\{x^{(1)},x^{(2)},\ldots,x^{(m)}\}$，我们构建一个多元正态分布，其均值为样本均值，协方差矩阵为样本的协方差矩阵，即：
+\begin{align*}
+\mu&=\frac{1}{m}\sum\limits_{i=1}^mx^{(i)}\\
+\Sigma&=\frac{1}{m}\sum\limits_{i=1}^m(x^{(i)}-\mu)(x^{(i)}-\mu)^T\\
+p(x;\mu,\Sigma)&=\frac{1}{(2\pi)^{n/2}|\Sigma|^{1/2}}\exp\left(-\frac{1}{2}(x-\mu)^T\Sigma^{-1}(x-\mu)\right)
+\end{align*}
+或者直接认定 $x$ 各维度不相关，取：
+\[
+p(x;\mu,\Sigma)=\prod_{i=1}^np(x_i;\mu_i,\sigma_i^2)
+\]
+
+\begin{note}
+后者在计算上更快，且允许 $m\leqslant n$ 的情况；而前者在 $m>n$ 时 $\Sigma$ 不可逆。
+\end{note}
+
+对于要检测的数据 $x$，如果 $p(x;\mu,\Sigma)$ 小于某个阈值 $\varepsilon$，那么就认为该数据是异常数据，否则正常。
+
+如果我们有标注过的数据（标注是否异常），则可以将数据划分为训练集、验证集和测试集。训练集包含大部分正常数据，并据此构建出正态分布模型；验证集和测试集包含正常和异常数据，我们可以根据验证集的结果调整参数 $\varepsilon$，最后在测试集上进行测试。
+
+\begin{note}
+注意，由于异常检测通常有偏（正常数据远远多于异常数据），所以测试结果应该取 $\text{precision},\text{recall},\text{F1}$ 等值。
+\end{note}
+
+
+\subsection{代码实现}
+
+训练集即据此构建的二元正态分布：
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{figs/Chap_13_Figure_0.png}
+\end{figure}
+
+\begin{lstlisting}[language=Python]
+Xmeans = X.mean(axis=0)
+Xcov = ((X - Xmeans).T @ (X - Xmeans)) / X.shape[0]
+normDist = multivariate_normal(mean=Xmeans, cov=Xcov)
+\end{lstlisting}
+
+根据验证集找到的最佳 $\varepsilon$ 约为：$2.72\times 10^{-5}$；此时测试集上 $\text{F1}$ 值约为：$0.75$. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{figs/Chap_13_Figure_1.png}
+\end{figure}
