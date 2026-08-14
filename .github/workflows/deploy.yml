@@ -1,0 +1,65 @@
+name: Build and deploy notes
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Compile online-ml
+        uses: xu-cheng/latex-action@v4
+        with:
+          root_file: main.tex
+          working_directory: sources/online-ml/latex
+          latexmk_use_xelatex: true
+          texlive_version: 2026
+          os: debian
+
+      - name: Assemble website
+        run: |
+          mkdir -p _site/sources/online-ml
+
+          cp index.html _site/
+          cp stylesheet.css _site/
+          cp -R images _site/images
+
+          cp sources/online-ml/latex/main.pdf \
+             _site/sources/online-ml/notes.pdf
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload website
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
