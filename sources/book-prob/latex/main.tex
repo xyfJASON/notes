@@ -1,0 +1,129 @@
+\PassOptionsToPackage{quiet}{fontspec}
+\documentclass{article}
+
+
+%%%%%%%%%%%%%%%%%%% usepackage %%%%%%%%%%%%%%%%%%%
+
+\usepackage[a4paper, margin=1in]{geometry}
+\usepackage{ctex}
+% \setCJKmainfont[Mapping = fullwidth-stop]{FandolSong-Regular}
+
+% paragraph
+\usepackage{parskip}
+% math
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{centernot}
+\usepackage{arydshln}
+\setcounter{MaxMatrixCols}{11}
+% reference
+\usepackage[hidelinks]{hyperref}
+% layout
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage{framed}
+\usepackage{float}
+\usepackage[bottom]{footmisc}
+\usepackage{caption}
+% color and box
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable}
+% table
+\usepackage{multicol}
+\usepackage{multirow}
+% list
+\usepackage{enumitem}
+\setlist{noitemsep}
+
+
+%%%%%%%%%%%%%%%%%%%%%% math %%%%%%%%%%%%%%%%%%%%%%
+
+\theoremstyle{definition}
+\newtheorem{theorem}{定理}[section]
+\newtheorem{corollary}[theorem]{推论}
+\newtheorem{lemma}[theorem]{引理}
+\newtheorem*{property}{性质}
+
+\theoremstyle{definition}
+\newtheorem{definition}{定义}[section]
+\newtheorem{example}{例}[section]
+\newtheorem{exercise}{练习}
+
+\theoremstyle{remark}
+\newtheorem*{remark}{注解}
+\newtheorem*{note}{注意}
+\newtheorem*{com}{注释}
+
+\tcolorboxenvironment{example}{colback=blue!5!white, boxrule=0.5pt, breakable}
+\tcolorboxenvironment{remark}{colback=green!10!white, boxrule=0.5pt, breakable}
+\tcolorboxenvironment{note}{colback=yellow!10!white, boxrule=0.5pt, breakable}
+\tcolorboxenvironment{proof}{colback=black!5!white, boxrule=0.5pt, breakable}
+
+
+%%%%%%%%%%%%%%%%%% new command %%%%%%%%%%%%%%%%%%%
+\newcommand{\ind}{\mathrel{\perp\!\!\!\!\perp}}
+\newcommand{\cov}{\mathrm{cov}}
+\newcommand{\var}{\mathrm{var}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Pb}{\mathrm{P}}
+\newcommand\norm[1]{\Vert#1\Vert}
+\renewcommand{\leq}{\leqslant}
+\renewcommand{\geq}{\geqslant}
+\newcommand{\argmin}{\mathop{\arg\min}}
+\newcommand{\argmax}{\mathop{\arg\max}}
+
+\newcommand{\TODO}[1]{{\color{red}{TODO:#1}}}
+
+
+%%%%%%%%%%%%%%%%%%%%%% main %%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\begin{titlepage}
+    \vspace*{0.5cm}
+    \begin{center}
+        \rule{\linewidth}{2.0pt} \\[0.8\baselineskip]
+        {\LARGE \textbf{\uppercase{Book Note}}}\\[0.8\baselineskip]
+        {\Large \textbf{\uppercase{Introduction to Probability}}}\\[0.2\baselineskip]
+        \rule{\linewidth}{1.5pt} \\
+        
+        \vfill
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.6\linewidth]{figs/cover.png}
+        \end{figure}
+        \vfill
+        
+        {\large \textbf{Yifeng Xu}\\Institute of Computing Technology, CAS\\University of Chinese Academy of Sciences}\\[0.5cm]
+    \end{center}
+\end{titlepage}
+
+\thispagestyle{empty}
+\newpage
+
+
+\nocite{*}
+\input{chapter0} \newpage
+\tableofcontents \newpage
+\input{chapter1} \newpage
+\input{chapter2} \newpage
+\input{chapter3} \newpage
+\input{chapter4} \newpage
+\input{chapter5} \newpage
+\input{chapter6} \newpage
+
+\appendix
+\input{appendix-A} \newpage
+\input{appendix-B} \newpage
+\input{appendix-C} \newpage
+
+\bibliographystyle{unsrt}
+\bibliography{references}
+
+\end{document}

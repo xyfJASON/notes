@@ -1,0 +1,124 @@
+\section{正态分布的三个导出分布}
+\label{sec:normal-derive}
+
+\begin{definition}[$\chi^2$ 分布]
+设 $X_1,X_2,\cdots,X_n$ 为 $n$ 个独立的服从 $N(0,1)$ 的随机变量，则称
+\[
+Z=\sum\limits_{i=1}^nX_i^2
+\]
+的分布为自由度为 $n$ 的 $\chi^2$ 分布，记作 $Z\sim \chi^2(n)$. 
+\end{definition}
+
+\noindent\textbf{期望与方差}：
+\[
+\E Z=n,\quad\var Z=2n
+\]
+\begin{proof}
+由于
+\[
+\E X_i^2=\var X_i+(\E X_i)^2=1+0=1
+\]
+故
+\[
+\E Z=\E \left[\sum_{i=1}^nX_i^2\right]=\sum_{i=1}^n\E X_i^2=n
+\]
+又由于
+\begin{align*}
+\E X_i^4&=\int_{-\infty}^{+\infty}x^4\varphi(x)\mathrm dx\\
+&=\frac{1}{\sqrt{2\pi}}\int_{-\infty}^{+\infty}x^4e^{-\frac{x^2}{2}}\mathrm dx
+=-\frac{1}{\sqrt{2\pi}}\int_{-\infty}^{+\infty}x^3\mathrm d e^{-\frac{x^2}{2}}\\
+&=\frac{3}{\sqrt{2\pi}}\int_{-\infty}^{+\infty}x^2e^{-\frac{x^2}{2}}\mathrm dx
+=-\frac{3}{\sqrt{2\pi}}\int_{-\infty}^{+\infty}x\mathrm de^{-\frac{x^2}{2}}\\
+&=\frac{3}{\sqrt{2\pi}}\int_{-\infty}^{+\infty}e^{-\frac{x^2}{2}}\mathrm dx=3
+\end{align*}
+故
+\[
+\var X_i^2=\E X_i^4-(\E X_i^2)^2=3-1=2
+\]
+故
+\[
+\var Z=\var \sum_{i=1}^nX_i^2=\sum_{i=1}^n\var X_i=2n
+\]
+\end{proof}
+
+
+\begin{definition}[$t$ 分布]
+设 $X\sim N(0,1)$，$Y\sim \chi^2(n)$，$X,Y$ 相互独立，则称
+\[
+t=\frac{X}{\sqrt{Y/n}}
+\]
+的分布为自由度为 $n$ 的 $t$ 分布，记作 $t\sim t(n)$. 
+\end{definition}
+
+
+\begin{definition}[$F$ 分布]
+设 $X\sim\chi^2(n),Y\sim\chi^2(m)$，$X,Y$ 独立，则称
+\[
+Z=\frac{X/n}{Y/m}
+\]
+的分布为自由度为 $n,m$ 的 $F$ 分布，记作 $Z\sim F(n,m)$. 
+\end{definition}
+
+
+\begin{theorem}
+设 $X_i\overset{\text{i.i.d.}}{\sim} N(\mu,\sigma^2)$，则样本均值服从期望相同、方差更小的正态分布：
+\[
+\bar X=\frac{1}{n}\sum\limits_{i=1}^nX_i\sim N\left(\mu,\frac{\sigma^2}{n}\right)
+\]
+\end{theorem}
+
+\begin{theorem}
+\label{thm:standard-normal}
+设 $X_i\overset{\text{i.i.d.}}{\sim} N(\mu,\sigma^2)$，有样本均值的标准化：
+\[
+\frac{\bar X-\mu}{\sigma/\sqrt{n}}\sim N(0,1)
+\]
+\end{theorem}
+
+\begin{theorem}
+\label{thm:s2chi2}
+设 $X_i\overset{\text{i.i.d.}}{\sim} N(\mu,\sigma^2)$，$S^2=\frac{1}{n-1}\sum\limits_{i=1}^n(X_i-\bar X)^2$ 为样本方差，则：
+\[
+\frac{(n-1)S^2}{\sigma^2}\sim \chi^2(n-1)
+\]
+\end{theorem}
+
+\begin{theorem}
+设 $X_i\overset{\text{i.i.d.}}{\sim} N(\mu,\sigma^2)$，$S^2=\frac{1}{n-1}\sum\limits_{i=1}^n(X_i-\bar X)^2$ 为样本方差，则 $\bar X$ 与 $S^2$ 独立。
+\end{theorem}
+
+\begin{theorem}
+设 $X_i\overset{\text{i.i.d.}}{\sim} N(\mu,\sigma^2)$，$S^2=\frac{1}{n-1}\sum\limits_{i=1}^n(X_i-\bar X)^2$ 为样本方差，则：
+\[
+\frac{\sqrt n(\bar X-\mu)}{S}\sim t(n-1)
+\]
+\end{theorem}
+\begin{proof}
+根据定理 \ref{thm:standard-normal} 和定理 \ref{thm:s2chi2} 可知；
+\[
+\frac{\bar X-\mu}{\sigma/\sqrt{n}}\sim N(0,1),\quad
+\frac{(n-1)S^2}{\sigma^2}\sim \chi^2(n-1)
+\]
+于是，根据 $t$ 分布的定义有：
+\[
+\cfrac{\cfrac{\bar X-\mu}{\sigma/\sqrt{n}}}{\sqrt{\frac{(n-1)S^2}{\sigma^2}/(n-1)}}=\frac{\sqrt n(\bar X-\mu)}{S}\sim t(n-1)
+\]
+\end{proof}
+
+\begin{theorem}
+设 $X_i\overset{\text{i.i.d.}}{\sim} N(\mu_1,\sigma_1^2)$，$i=1,2,\cdots,n$，样本方差为 $S_1^2$；$Y_i\overset{\text{i.i.d.}}{\sim} N(\mu_2,\sigma_2^2)$，$i=1,2,\cdots,m$，样本方差为 $S_2^2$，且 $X_i,Y_i$ 相互独立，则：
+\[
+\frac{S_1^2/\sigma_1^2}{S_2^2/\sigma_2^2}\sim F(n-1,m-1)
+\]
+\end{theorem}
+\begin{proof}
+由定理 \ref{thm:s2chi2} 知：
+\[
+\frac{(n-1)S_1^2}{\sigma_1^2}\sim\chi^2(n-1),\quad
+\frac{(m-1)S_2^2}{\sigma_2^2}\sim \chi^2(m-1)
+\]
+于是根据 $F$ 分布的定义有：
+\[
+\frac{\dfrac{(n-1)S_1^2}{\sigma_1^2}/(n-1)}{\dfrac{(m-1)S_2^2}{\sigma_2^2}/(m-1)}=\frac{S_1^2/\sigma_1^2}{S_2^2/\sigma_2^2}\sim F(n-1,m-1)
+\]
+\end{proof}

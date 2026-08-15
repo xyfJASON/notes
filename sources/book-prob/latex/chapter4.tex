@@ -1,0 +1,161 @@
+\section{极限理论}
+
+给定一列独立同分布随机变量 $X_1,X_2,\ldots$，定义前 $n$ 项和 $S_n=X_1+X_2+\cdots+X_n$，本章的极限理论研究 $S_n$ 及其相关变量在 $n\to\infty$ 时的极限性质。
+
+
+\subsection{马尔可夫不等式与切比雪夫不等式}
+
+\begin{theorem}[马尔可夫不等式]
+设随机变量 $X$ \textbf{只取非负值}，则对任意 $a>0$，有：
+\[
+\mathbb P(X\geq a)\leq \frac{\mathbb EX}{a}
+\]
+\end{theorem}
+\begin{com}
+粗略来讲，马尔可夫不等式指出，一个非负随机变量如果均值很小，那么该随机变量取大值的概率也很小。
+\end{com}
+\begin{proof}
+这里假设 $X$ 是连续随机变量，离散类似。
+\[
+\mathbb EX=\int_0^{+\infty}xf_X(x)\mathrm dx\geq \int_a^{+\infty}xf_X(x)\mathrm dx\geq a\int_a^{+\infty}f_X(x)\mathrm dx=a\cdot\mathbb P(X\geq a)
+\]
+\end{proof}
+
+\begin{example}
+\label{ex:markov}
+设 $X\sim U(0,4)$，则 $\E X=2$，由马尔可夫不等式可得：
+\[
+\Pb(X\geq2)\leq\frac{2}{2}=1,\quad\Pb(X\geq 3)\leq\frac{2}{3},\quad\Pb(X\geq 4)\leq\frac{2}{4}=\frac{1}{2}
+\]
+而真实概率是：
+\[
+\Pb(X\geq2)=\frac{1}{2},\quad\Pb(X\geq 3)=\frac{1}{4},\quad\Pb(X\geq 4)=0
+\]
+可见由马尔可夫不等式给出的上界非常的粗糙。
+\end{example}
+
+\begin{theorem}[切比雪夫不等式]
+设随机变量 $X$ 的均值为 $\mu$，方差为 $\sigma^2$，则对任意 $c>0$，有：
+\[
+\mathbb P(|X-\mu|\geq c)\leq \frac{\sigma^2}{c^2}
+\]
+\end{theorem}
+\begin{com}
+粗略来讲，切比雪夫不等式指出，如果一个随机变量的方差非常小，那么该随机变量取远离均值的概率也非常小。
+\end{com}
+\begin{proof}
+利用马尔可夫不等式，
+\[
+\mathbb P(|X-\mu|\geq c)=\mathbb P((X-\mu)^2\geq c^2)\leq \frac{\mathbb E[(X-\mu)^2]}{c^2}=\frac{\sigma^2}{c^2}
+\]
+\end{proof}
+
+相比马尔可夫不等式，切比雪夫不等式利用了随机变量的方差的信息，因此会更准确。不过均值和方差也仅仅是粗略描述了随机变量的性质，因此它给出的上界可能依旧距离精确概率较远。
+
+\begin{example}
+仍然考虑例 \ref{ex:markov}，即 $X\sim U(0,4),\,\E X=2,\,\var X=\frac{4}{3}$，则根据切比雪夫不等式有：
+\[
+\Pb(|X-2|\geq1)\leq\frac{4}{3}
+\]
+由于概率一定小于等于 1，所以这个不等式并没有带来任何信息。
+\end{example}
+
+\begin{example}
+设 $X\sim E(1)$，则 $\E X=\var X=1$，对任意 $c>2$，应用切比雪夫不等式可得：
+\[
+\Pb(X\geq c)=\Pb(X-1\geq c-1)=\Pb(|X-1|\geq c-1)\leq\frac{1}{(c-1)^2}
+\]
+而真实概率是 $\Pb(X\geq c)=e^{-c}$，可见切比雪夫不等式给出的上界比较保守。
+\end{example}
+
+
+\subsection{弱大数定律}
+
+\begin{definition}[依概率收敛]
+设 $X_1,X_2,\ldots$ 是随机变量序列，$a\in\mathbb R$，若对任意 $\epsilon>0$，都有：
+\[
+\lim_{n\to\infty}\Pb(|X_n-a|\geq\epsilon)=0
+\]
+则称 $\{X_n\}$ 依概率收敛到 $a$.
+\end{definition}
+
+\begin{com}
+用 $\epsilon$-$N$ 语言描述上述定义中的数列极限，则依概率收敛可以等价叙述为：对任意 $\epsilon>0$ 和 $\delta>0$，存在 $N\in\mathbb N$，当 $n\geq N$ 时，都有：
+\[
+\Pb(|X_n-a|\geq\epsilon)\leq\delta
+\]
+其中 $\epsilon$ 称作精度，$\delta$ 称作置信水平。
+\end{com}
+
+\begin{theorem}[弱大数定律]
+设 $X_1,X_2,\ldots$ 是独立同分布的随机变量序列，其公共分布均值为 $\mu$，则样本均值 $M_n=\frac{1}{n}\sum_{i=1}^nX_i$ 依概率收敛到 $\mu$，即对任意 $\epsilon>0$，有：
+\[
+\lim_{n\to\infty}\mathbb P(|M_n-\mu|\geq\epsilon)=0
+\]
+\end{theorem}
+\begin{proof}
+这里仅对方差有界的情形进行证明，方差无界时弱大数定律依然成立，但是证明较为精巧。
+考虑 $M_n$ 的均值和方差：
+\begin{align*}
+&\mathbb EM_n=\frac{1}{n}\sum_{i=1}^n\mathbb EX_i=\mu\\
+&\text{var}(M_n)=\frac{1}{n^2}\sum_{i=1}^n\text{var}(X_i)=\frac{\sigma^2}{n}
+\end{align*}
+于是根据切比雪夫不等式，对任意 $\epsilon>0$，有：
+\[
+\mathbb P(|M_n-\mu|\geq\epsilon)\leq \frac{\sigma^2}{n\epsilon^2}\to0\quad(n\to\infty)
+\]
+\end{proof}
+\begin{com}
+一般情形的弱大数定理称为辛钦大数定律，而方差有界的情形称之为切比雪夫大数定律。
+更特殊的，对于 $X_1,X_2,\ldots\overset{\text{i.i.d.}}{\sim}B(1,p)$ 的情形而言，我们称之为伯努利大数定律：
+\[
+\lim_{n\to\infty}\mathbb P(|M_n-p|\geq \epsilon)=0
+\]
+\end{com}
+
+
+\subsection{中心极限定理}
+
+\begin{theorem}[中心极限定理]
+设 $X_1,X_2,\ldots$ 是独立同分布的随机变量序列，序列的每一项的均值为 $\mu$，方差为 $\sigma^2$，则对 $\forall x\in\R$，有：
+\[
+\lim_{n\to\infty}\mathbb P\left(\frac{\sum\limits_{i=1}^nX_i-n\mu}{\sqrt n\sigma}\leq  x\right)=\Phi(x)
+\]
+其中 $\Phi(x)$ 表示标准正态分布的 CDF.
+\end{theorem}
+\begin{com}
+粗略来讲，中心极限定理表明，在大样本的情况下，独立同分布的随机变量序列的样本均值的标准化结果服从标准正态分布。
+\end{com}
+
+\begin{com}
+这个一般情形的定理被称作林德伯格-莱维中心极限定理。
+\end{com}
+
+\begin{com}
+对于 $X_1,X_2,\ldots\overset{\text{i.i.d.}}{\sim} B(1,p)$ 的特殊情形而言，我们称之为棣莫弗-拉普拉斯中心极限定理：
+\[
+\lim_{n\to\infty}\mathbb P\left(\frac{\sum\limits_{i=1}^nX_i-np}{\sqrt{np(1-p)}}\leq x\right)=\Phi(x)
+\]
+\end{com}
+
+
+\subsection{强大数定律}
+
+\begin{definition}[以概率 1 收敛/几乎必然收敛]
+设 $X_1,X_2,\ldots$ 是随机变量序列，$a\in\mathbb R$，若：
+\[
+\Pb\left(\lim_{n\to\infty}X_n=a\right)=1
+\]
+则称 $\{X_n\}$ 以概率 1 收敛到 $a$ 或几乎必然收敛到 $a$.
+\end{definition}
+
+\begin{theorem}[强大数定律]
+设 $X_1,X_2,\ldots$ 是均值为 $\mu$ 的独立同分布的随机变量序列，则样本均值 $M_n=\frac{1}{n}\sum_{i=1}^nX_i$ 以概率 1 收敛到 $\mu$，即：
+\[
+\Pb\left(\lim_{n\to\infty}M_n=\mu\right)=1
+\]
+\end{theorem}
+
+\begin{com}
+弱大数定律是指 $M_n$ 显著性偏离 $\mu$ 的事件的概率在 $n\to\infty$ 时趋于 0，但是对任意有限的 $n$，这个概率可以是正的。所以可以想象的是，在 $M_n$ 这个无穷的序列中，常常有 $M_n$ 显著偏离 $\mu$. 而强大数定律则进一步告诉我们，这样的显著偏离事件只能发生有限次。
+\end{com}

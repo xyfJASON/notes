@@ -7,10 +7,13 @@ sources/*
 !sources/online-ml/**
 !sources/grad-matr/
 !sources/grad-matr/**
+!sources/book-prob/
+!sources/book-prob/**
 
 # Generated LaTeX output.
 sources/online-ml/latex/main.pdf
 sources/grad-matr/latex/main.pdf
+sources/book-prob/latex/main.pdf
 
 **/*.aux
 **/*.bbl
@@ -24,3 +27,6 @@ sources/grad-matr/latex/main.pdf
 **/*.synctex.gz
 **/*.toc
 **/*.xdv
+
+# macOS metadata files everywhere
+**/.DS_Store
