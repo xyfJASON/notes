@@ -3,65 +3,61 @@
 
 \subsection{过拟合}
 
-以多项式回归为例。多项式回归是指在线性回归的基础上，人为的引入高阶项并将其视为新的一维特征，然后进行线性回归，从而达到拟合非线性数据的目的。举例而言，设线性回归的一个数据是 $\left(x^{(i)},y^{(i)}\right)$，我们在多项式回归时可以将其视为 $\left(x^{(i)},{x^{(i)}}^2,y^{(i)}\right)$，这样就人为引入了一个二阶项，我们的回归方程（假设函数）就变成了：$y=\theta_0+\theta_1x+\theta_2x^2$，如此就用二次函数去拟合数据了。
+多项式回归通过在线性回归中人为引入高阶项，并将它们视为新的特征，从而拟合非线性数据。例如，可以将样本 $\left(x^{(i)},y^{(i)}\right)$ 扩展为 $\left(x^{(i)},{x^{(i)}}^2,y^{(i)}\right)$，使假设函数变为 $y=\theta_0+\theta_1x+\theta_2x^2$，从而用二次函数而不是直线拟合数据。
 
-我们知道，一个函数可以泰勒展开成幂级数，越展开幂级数越接近原函数，那在回归中是不是也是次数越高越好呢？答案是否定的，因为我们只有有限个数据。如果特征维数 $n$ 过于接近数据量 $m$，则它会很好地拟合上我们的数据集，然而对于不在数据集中的数据，这可能并不是一个好的拟合结果。譬如，$n=m$ 时，由插值的原理容易知道，我们可以找到一个唯一的 $n-1$ 次多项式完美地经过所有数据，即每个数据集中的数据偏差都是 $0$，但是这显然不是一个好的拟合，如下图：
-
+尽管增加多项式次数能够提高模型的表达能力，但次数并非越高越好。当特征维数 $n$ 接近样本数量 $m$ 时，模型可能近乎完美地拟合训练数据，却无法对训练集之外的新数据作出可靠预测，这种现象称为过拟合。例如，当 $n=m$ 时，根据插值原理，可以找到一个 $n-1$ 次多项式经过所有样本点，使训练集中每个点的误差都为 $0$；但这条曲线可能在样本点之间剧烈波动，泛化能力很差，如下图所示：
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\linewidth]{figs/Chap_5_img1.png}
 \end{figure}
-
-同样地，逻辑回归也可能产生过拟合：
-
+逻辑回归同样可能出现过拟合：
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\linewidth]{figs/Chap_5_img2.png}
 \end{figure}
-
-解决过拟合的方法有很多，这里学习正则化方法（Regularization）。
+缓解过拟合的方法有很多，本节主要介绍正则化（Regularization）。
 
 
 \subsection{正则化}
 
-仍然以多项式回归为例，如果我们的假设函数为：$h_\theta(x)=\theta_0+\theta_1x+\theta_2x^2+\theta_3x^3+\theta_4x^4$，而其中的高阶项 $\theta_3,\theta_4$ 导致了过拟合问题，那么我们自然希望 $\theta_3$ 和 $\theta_4$ 越小越好。此时，我们只需要对代价函数做出一点修改：$J(\theta)=\frac{1}{2m}\left[\sum\limits_{i=1}^m\left(h_\theta(x^{(i)})-y^{(i)}\right)^2+1000\theta_3^2+1000\theta_4^2\right]$，这样当 $J(\theta)$ 取最小时，$\theta_3$ 和 $\theta_4$ 都接近于 $0$，我们也就达到了目的。
+仍以多项式回归为例。若假设函数为 $h_\theta(x)=\theta_0+\theta_1x+\theta_2x^2+\theta_3x^3+\theta_4x^4$，并且假定高阶项 $\theta_3,\theta_4$ 导致了过拟合，那么一个自然的想法是在优化时限制这两个参数。在原代价函数的基础上，可以增加两项：$J(\theta)=\frac{1}{2m}\left[\sum_{i=1}^m\left(h_\theta(x^{(i)})-y^{(i)}\right)^2+1000\theta_3^2+1000\theta_4^2\right]$，此时，较大的惩罚系数会使非零的 $\theta_3$ 和 $\theta_4$ 显著增大代价。因而在最小化 $J(\theta)$ 时，这两个参数会被压缩到接近 $0$，高阶项对模型的影响也随之减弱。
 
-一般地，我们并不知道究竟应该对哪些参数做出“惩罚”，所以我们设代价函数为：
+实际问题中通常无法预先判断究竟哪些参数会导致过拟合，因此不只惩罚某几个指定参数，而是对除偏置项外的所有参数统一加入正则化项：
 \[
 J(\theta)=\frac{1}{m}\sum_{i=1}^m\text{Cost}\left(h_\theta(x^{(i)})-y^{(i)}\right)+\frac{\lambda}{2m}\sum_{j=1}^n\theta_j^2
 \]
-其中，$\lambda$ 是正则化参数，$\lambda\sum\limits_{j=1}^n\theta_j^2$ 是正则化项。即我们对\textbf{除了 $\theta_0$ 以外}的参数都做“惩罚”。
+其中，$\lambda$ 是正则化参数，$\lambda\sum_{j=1}^n\theta_j^2$ 是正则化项，即对\textbf{除 $\theta_0$ 以外}的参数进行惩罚。
 
-如何理解这个代价函数呢？使前一项 $\frac{1}{m}\sum\limits_{i=1}^m\text{Cost}\left(h_\theta(x^{(i)})-y^{(i)}\right)$ 尽可能小是为了去拟合数据集中的数据，使正则化项 $\frac{\lambda}{2m}\sum\limits_{j=1}^n\theta_j^2$ 尽可能小是为了减小各 $\theta_j$ 以避免过拟合，而 $\lambda$ 就是在二者之间权衡的参数。如果 $\lambda$ 很大，意味着正则化项占主要地位，有可能导致所有的 $\theta_j$ 都太小了而无法拟合好数据，即欠拟合；如果 $\lambda$ 很小，意味着拟合数据占主要地位，就有可能过拟合。所以一个合适的正则化参数 $\lambda$ 非常重要。
+这个代价函数同时考虑了拟合能力和模型复杂度。第一项 $\frac{1}{m}\sum_{i=1}^m\text{Cost}\left(h_\theta(x^{(i)})-y^{(i)}\right)$ 衡量模型对训练数据的拟合误差；第二项 $\frac{\lambda}{2m}\sum_{j=1}^n\theta_j^2$ 限制各 $\theta_j$ 的规模，以避免模型过度依赖某些特征。正则化系数 $\lambda$ 用于权衡二者：$\lambda$ 过大时，参数会被压缩得过小，模型可能无法充分拟合数据，从而产生欠拟合；$\lambda$ 过小时，正则化作用不足，模型仍可能过拟合。因此，选择合适的 $\lambda$ 十分重要。
 
 
-\paragraph{线性回归的正则化}
+\subsection{线性回归的正则化}
 
-线性回归的含有正则化项的代价函数为：
-\begin{align*}
-J(\theta)&=\frac{1}{2m}\left[\sum_{i=1}^m\left(h_\theta(x^{(i)})-y^{(i)}\right)^2+\lambda\sum_{j=1}^n\theta_j^2\right]\\
-&=\frac{1}{2m}\left[\sum_{i=1}^m\left(\theta^Tx^{(i)}-y^{(i)}\right)^2+\lambda\sum_{j=1}^n\theta_j^2\right]
-\end{align*}
+线性回归加入正则化项后的代价函数为：
+\[
+J(\theta)=\frac{1}{2m}\left[\sum_{i=1}^m\left(h_\theta(x^{(i)})-y^{(i)}\right)^2+\lambda\sum_{j=1}^n\theta_j^2\right]
+=\frac{1}{2m}\left[\sum_{i=1}^m\left(\theta^Tx^{(i)}-y^{(i)}\right)^2+\lambda\sum_{j=1}^n\theta_j^2\right]
+\]
 对其求导：
 \[
 \frac{\partial J}{\partial \theta_j}=\frac{1}{m}\sum_{i=1}^m\left(\theta^Tx^{(i)}-y^{(i)}\right)x^{(i)}_j+[j\neq 0]\frac{\lambda}{m}\theta_j,\quad j=0,1,\cdots,n
 \]
-所以梯度下降时，我们的迭代过程为：
+将该梯度代入参数更新公式，梯度下降的迭代过程为：
 \begin{align*}
 \theta_j&:=\theta_j-\alpha \frac{\partial J}{\partial \theta_j}\\
 &=\theta_j-\alpha \left[\frac{1}{m}\sum_{i=1}^m\left(\theta^Tx^{(i)}-y^{(i)}\right)x^{(i)}_j+\frac{\lambda}{m}\theta_j\right]\\
 &=\theta_j\left(1-\alpha\frac{\lambda}{m}\right)-\alpha\frac{1}{m}\sum_{i=1}^m\left(\theta^Tx^{(i)}-y^{(i)}\right)x^{(i)}_j,\quad j=1,\cdots,n
 \end{align*}
 
-若不用梯度下降，而是直接用正规方程，即在数学上解它，那么：
+由最后一行可以看出，正则化会在每次迭代时以 $(1-\alpha\frac{\lambda}{m})$ 的倍率额外缩小参数。
 
-为了记号的方便，我们先假定对 $\theta_0$ 也进行“惩罚”。首先将 $J(\theta)$ 写作矩阵形式：
+除梯度下降外，正则化线性回归也可以使用正规方程求解。为便于推导，先暂时假设 $\theta_0$ 也参与惩罚，并将 $J(\theta)$ 展开后写成矩阵形式：
 \begin{align*}
 J(\theta)&=\frac{1}{2m}\left[\sum_{i=1}^m\left(\theta^Tx^{(i)}\right)^2-2\sum_{i=1}^m\theta^Tx^{(i)}y^{(i)}+\sum_{i=1}^m\left(y^{(i)}\right)^2+\lambda\theta^T\theta\right]\\
 &=\frac{1}{2m}\left[\left(\theta^TX^T\right)\left(\theta^TX^T\right)^T-2\theta^TX^Ty+y^Ty+\lambda\theta^T\theta\right]\\
 &=\frac{1}{2m}\left[\theta^TX^TX\theta-2\theta^TX^Ty+y^Ty+\lambda\theta^T\theta\right]
 \end{align*}
-然后令
+令
 \[
 \frac{\partial J}{\partial \theta}=\frac{1}{m}\left[X^TX\theta-X^Ty+\lambda\theta\right]=0
 \]
@@ -73,15 +69,15 @@ J(\theta)&=\frac{1}{2m}\left[\sum_{i=1}^m\left(\theta^Tx^{(i)}\right)^2-2\sum_{i
 \[
 \theta=(X^TX+\lambda)^{-1}X^Ty
 \]
-现在把 $j=0$ 的特殊情况考虑进去，那么最后的结果就是：
+再考虑到 $j=0$ 不参与正则化，故最终结果为：
 \[
 \theta=\left(X^TX+\lambda\begin{bmatrix}0&&&\\&1&&\\&&\ddots&\\&&&1\end{bmatrix}\right)^{-1}X^Ty
 \]
 
 
-\paragraph{逻辑回归的正则化}
+\subsection{逻辑回归的正则化}
 
-逻辑回归的含有正则化项的代价函数为：
+逻辑回归加入正则化项后的代价函数为：
 \begin{align*}
 J(\theta)&=-\frac{1}{m}\sum_{i=1}^m\left[y^{(i)}\ln(h_\theta(x^{(i)}))+(1-y^{(i)})\ln(1-h_\theta(x^{(i)}))\right]+\frac{\lambda}{2m}\sum_{j=1}^n\theta_j^2\\
 &=\frac{1}{m}\sum_{i=1}^m\left[y^{(i)}\ln\left(1+e^{-\theta^Tx^{(i)}}\right)+\left(1-y^{(i)}\right)\ln\left(1+e^{\theta^Tx^{(i)}}\right)\right]+\frac{\lambda}{2m}\sum_{j=1}^n\theta_j^2
@@ -90,7 +86,7 @@ J(\theta)&=-\frac{1}{m}\sum_{i=1}^m\left[y^{(i)}\ln(h_\theta(x^{(i)}))+(1-y^{(i)
 \[
 \frac{\partial J}{\partial \theta_j}=\frac{1}{m}\sum_{i=1}^m\left(h_\theta(x^{(i)})-y^{(i)}\right)x^{(i)}_j+[j\neq 0]\frac{\lambda}{m}\theta_j,\quad j=0,1,\cdots,n
 \]
-所以梯度下降时，我们的迭代过程为：
+因此，梯度下降的迭代过程为：
 \begin{align*}
 \theta_0&:=\theta_0-\alpha\frac{\partial J}{\partial\theta_j}\\
 &=\theta_0-\alpha\frac{1}{m}\sum_{i=1}^m\left(h_\theta(x^{(i)})-y^{(i)}\right)x_0^{(i)}
@@ -100,15 +96,12 @@ J(\theta)&=-\frac{1}{m}\sum_{i=1}^m\left[y^{(i)}\ln(h_\theta(x^{(i)}))+(1-y^{(i)
 &=\theta_j\left(1-\alpha\frac{\lambda}{m}\right)-\alpha\frac{1}{m}\sum_{i=1}^m\left(h_\theta(x^{(i)})-y^{(i)}\right)x^{(i)}_j,\quad j=1,\cdots,n
 \end{align*}
 
-和线性回归一样，我们更希望将上面的式子写作矩阵形式。
-
-注意：以下表达式与 \texttt{numpy} 的矩阵形式相对应，即存在 "broadcast" 的表示方式，在数学上不一定严谨。
-
+为了便于运算，下面将上述表达式改写为矩阵形式。需要注意的是，以下写法与 \texttt{numpy} 的广播机制相对应，其中指数、对数以及乘法均按元素作用，因此数学记号并不完全严谨。
 
 
 \paragraph{代价函数的矩阵形式}
 
-回顾逻辑回归的代价函数：
+逻辑回归的代价函数为：
 \[
 J(\theta)=\frac{1}{m}\sum_{i=1}^m\left[-y^{(i)}\ln(h_\theta(x^{(i)}))-(1-y^{(i)})\ln(1-h_\theta(x^{(i)}))\right]
 \]
@@ -124,51 +117,51 @@ X=\begin{bmatrix}(x^{(1)})^T\\(x^{(2)})^T\\\vdots\\(x^{(m)})^T\end{bmatrix}\quad
 \[
 X\theta=\begin{bmatrix}(x^{(1)})^T\theta\\(x^{(2)})^T\theta\\\vdots\\(x^{(m)})^T\theta\end{bmatrix}=\begin{bmatrix}\theta^T(x^{(1)})\\\theta^T(x^{(2)})\\\vdots\\\theta^T(x^{(m)})\end{bmatrix}
 \]
-所以，设：
+记：
 \[
-h'_\theta(X)=1/(1+e^{-X\theta})\in\mathbb R^{m}
+{\bar h}_\theta(X)=1/(1+e^{-X\theta})\in\mathbb R^{m}
 \]
-于是：
+则：
 \[
-J(\theta)=-\frac{1}{m}\left[y^T\ln(h'_\theta(X))+(1-y^T)\ln(1-h'_\theta(X))\right]
+J(\theta)=-\frac{1}{m}\left[y^T\ln({\bar h}_\theta(X))+(1-y^T)\ln(1-{\bar h}_\theta(X))\right]
 \]
 
 
 \paragraph{代价函数偏导的矩阵形式}
 
-逻辑回归的代价函数的偏导函数向量：
+逻辑回归代价函数的梯度向量为：
 \[
-\frac{\partial J}{\partial \theta}=\frac{1}{m}\sum_{i=1}^m\left[\left(h_\theta(x^{(i)})-y^{(i)}\right)x^{(i)}\right]=\frac{1}{m}X^T(h'_\theta(X)-y)
+\frac{\partial J}{\partial \theta}=\frac{1}{m}\sum_{i=1}^m\left[\left(h_\theta(x^{(i)})-y^{(i)}\right)x^{(i)}\right]=\frac{1}{m}X^T({\bar h}_\theta(X)-y)
 \]
 
 
 \paragraph{正则化后的矩阵形式}
 
-回顾正则化后的逻辑回归代价函数及其偏导：
+正则化后的逻辑回归代价函数及其梯度为：
 \begin{align*}
 J(\theta)&=\frac{1}{m}\sum_{i=1}^m\left[-y^{(i)}\ln(h_\theta(x^{(i)}))-(1-y^{(i)})\ln(1-h_\theta(x^{(i)}))\right]+\frac{\lambda}{2m}\sum_{j=1}^n\theta_j^2\\
 \frac{\partial J}{\partial \theta}&=\frac{1}{m}\sum_{i=1}^m\left(h_\theta(x^{(i)})-y^{(i)}\right)x^{(i)}+\frac{\lambda}{m}\hat\theta
 \end{align*}
-注意，这里 $\hat\theta=\begin{bmatrix}0\\\theta_1\\\vdots\\\theta_n\end{bmatrix}$，即在 $\theta$ 中将 $\theta_0$ 换成 $0$. 
+其中，$\hat\theta=(0,\theta_1,\cdots,\theta_n)^T$，即将 $\theta$ 中的 $\theta_0$ 替换为 $0$. 
 
-有了之前的推导，就容易写出正则化后的矩阵形式了：
+将前面得到的非正则化矩阵形式与正则化项结合，即可得到：
 \begin{align*}
-J(\theta)&=-\frac{1}{m}\left[y^T\ln(h'_\theta(X))+(1-y^T)\ln(1-h'_\theta(X))\right]+\frac{\lambda}{2m}\hat\theta^T\hat\theta\\
-\frac{\partial J}{\partial \theta}&=\frac{1}{m}X^T(h'_\theta(X)-y)+\frac{\lambda}{m}\hat\theta
+J(\theta)&=-\frac{1}{m}\left[y^T\ln({\bar h}_\theta(X))+(1-y^T)\ln(1-{\bar h}_\theta(X))\right]+\frac{\lambda}{2m}\hat\theta^T\hat\theta\\
+\frac{\partial J}{\partial \theta}&=\frac{1}{m}X^T({\bar h}_\theta(X)-y)+\frac{\lambda}{m}\hat\theta
 \end{align*}
-这也是我们使用 `numpy` 实现正则化逻辑回归时的表达式。
+这也是使用 \texttt{numpy} 实现正则化逻辑回归时采用的表达式。
 
 
 \subsection{代码实现}
 
-首先还是来看一下数据集：
+首先观察数据集：
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\linewidth]{figs/Chap_5_Figure_0.png}
 \end{figure}
 
-显然，我们需要用一个多项式去进行逻辑回归，这里将数据的两维都扩充为 $3$ 次，形成有 $16$ 维特征的数据，然后进行逻辑回归。
+从散点分布可以看出，线性决策边界无法很好地区分两类样本，因此需要引入多项式特征。这里将两个原始特征分别扩展至 $3$ 次，组合得到 $16$ 维特征，再进行正则化逻辑回归。
 
 \begin{lstlisting}[language=Python]
 import numpy as np
@@ -254,25 +247,25 @@ p2.set_ylabel("Cost")
 plt.show()
 \end{lstlisting}
 
-以下是 $\lambda=0,1,5$ 的回归结果和收敛情况：
+下面分别令 $\lambda=0,1,5$，观察正则化强度变化对决策边界和收敛过程的影响：
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\linewidth]{figs/Chap_5_Figure_11.png}
+    \includegraphics[width=0.8\linewidth]{figs/Chap_5_Figure_11.png}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\linewidth]{figs/Chap_5_Figure_12.png}
+    \includegraphics[width=0.8\linewidth]{figs/Chap_5_Figure_12.png}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\linewidth]{figs/Chap_5_Figure_13.png}
+    \includegraphics[width=0.8\linewidth]{figs/Chap_5_Figure_13.png}
 \end{figure}
 
 
-接下来我换了一个生成特征的方式：
+另一种方式生成特征的方式：
 
 \begin{lstlisting}[language=Python]
 def extend(x1, x2):
@@ -283,19 +276,19 @@ def extend(x1, x2):
 	return X
 \end{lstlisting}
 
-结果如下：
+再次比较不同正则化参数，相应结果如下：
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\linewidth]{figs/Chap_5_Figure_21.png}
+    \includegraphics[width=0.8\linewidth]{figs/Chap_5_Figure_21.png}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\linewidth]{figs/Chap_5_Figure_22.png}
+    \includegraphics[width=0.8\linewidth]{figs/Chap_5_Figure_22.png}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\linewidth]{figs/Chap_5_Figure_23.png}
+    \includegraphics[width=0.8\linewidth]{figs/Chap_5_Figure_23.png}
 \end{figure}

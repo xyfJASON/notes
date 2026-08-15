@@ -5,26 +5,41 @@
 \usepackage[a4paper, margin=1in]{geometry}
 \usepackage{ctex}
 
+% paragraph
 \usepackage{parskip}
-\setlength{\parindent}{0pt}
-
-\usepackage{amsthm, amsfonts, amsmath, amssymb}
+% math
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
 \usepackage{mathtools}
 \usepackage{centernot}
 \usepackage{arydshln}
-
+% reference
+\usepackage[hidelinks]{hyperref}
+% layout
 \usepackage{booktabs}
 \usepackage{graphicx}
 \usepackage{setspace}
-\usepackage[hidelinks]{hyperref}
 \usepackage{framed}
 \usepackage{float}
 \usepackage[bottom]{footmisc}
 \usepackage{caption}
-
+% color and box
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable}
+% table
+\usepackage{multicol}
+\usepackage{multirow}
+\usepackage{tabularx}
+% list
+\usepackage{enumitem}
+\setlist{noitemsep}
+% code
 \usepackage{listings}
 \lstset{
-    basicstyle=\ttfamily\small,
+    basicstyle=\ttfamily\footnotesize,
     keywordstyle=\color{blue},
     commentstyle=\color{gray},
     stringstyle=\color{brown},
@@ -35,17 +50,6 @@
     aboveskip=3ex,
     belowskip=0ex,
 }
-
-\usepackage{tcolorbox}
-\tcbuselibrary{breakable}
-
-\usepackage{xcolor}
-\usepackage{multicol}
-\usepackage{multirow}
-\usepackage{tabularx}
-
-\usepackage{enumitem}
-\setlist{noitemsep}
 
 
 %%%%%%%%%%%%%%%%%%%%%% math %%%%%%%%%%%%%%%%%%%%%%
@@ -67,8 +71,10 @@
 \newtheorem*{com}{注释}
 
 \tcolorboxenvironment{example}{colback=blue!5!white, boxrule=0.5pt, breakable}
-\tcolorboxenvironment{remark}{colback=green!10!white, boxrule=0.5pt, breakable}
-\tcolorboxenvironment{note}{colback=yellow!10!white, boxrule=0.5pt, breakable}
+\tcolorboxenvironment{remark}{colback=black!5!white, boxrule=0.5pt, breakable}
+% \tcolorboxenvironment{remark}{colback=green!10!white, boxrule=0.5pt, breakable}
+% \tcolorboxenvironment{note}{colback=yellow!10!white, boxrule=0.5pt, breakable}
+\tcolorboxenvironment{note}{colback=black!5!white, boxrule=0.5pt, breakable}
 \tcolorboxenvironment{proof}{colback=black!5!white, boxrule=0.5pt, breakable}
 
 
@@ -86,9 +92,9 @@
 \begin{titlepage}
     \vspace*{0.5cm}
     \begin{center}
-        \rule{\linewidth}{2.0pt} \\[0.6\baselineskip]
-        {\LARGE \textbf{\uppercase{Lecture Note}}}\\[0.6\baselineskip]
-        {\Large \textbf{\uppercase{Machine Learning by Andrew Ng}}}\\
+        \rule{\linewidth}{2.0pt} \\[0.8\baselineskip]
+        {\LARGE \textbf{\uppercase{Lecture Note}}}\\[0.8\baselineskip]
+        {\Large \textbf{\uppercase{Machine Learning by Andrew Ng}}}\\[0.2\baselineskip]
         \rule{\linewidth}{1.5pt} \\
         
         \vfill

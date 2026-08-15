@@ -3,73 +3,70 @@
 
 \subsection{基于内容的推荐算法}
 
-以向用户推荐电影为例，假设我们对每部电影构建了一个特征向量，并且已知每个用户对某些电影的评分，那么对于某个用户而言，我们可以将电影的特征向量看作自变量 $x$，他的评分看作因变量 $y$，然后做\textbf{线性回归}。
+以向用户推荐电影为例。假设已经为每部电影构建了特征向量，例如不同类型或题材所占的程度，并且已知每个用户对部分电影的评分。对于某个用户，可以将电影特征作为自变量 $x$、该用户的评分作为因变量 $y$，从而为每个用户建立一个独立的\textbf{线性回归}模型。
 
-具体地，设一共有 $n_u$ 个用户，$n_m$ 部电影，第 $i$ 部电影的特征向量为 $x^{(i)}\in\mathbb R^{n+1}$（包含偏置项），$r(i,j)$ 表示用户 $j$ 是否对第 $i$ 部电影进行了评分，如果评了分，设评分为 $y^{(i,j)}$. 那么对于第 $j$ 个用户，线性回归的目标就是学习一个参数 $\theta^{(j)}$，使得：
+设共有 $n_u$ 个用户和 $n_m$ 部电影，第 $i$ 部电影的特征向量为 $x^{(i)}\in\mathbb R^{n+1}$（包含偏置项）。$r(i,j)$ 表示用户 $j$ 是否评价了电影 $i$；若已经评分，则对应分数记为 $y^{(i,j)}$. 对于用户 $j$，只使用他已经评价过的电影训练参数 $\theta^{(j)}$，优化目标为：
 \[
-\min_{\theta^{(j)}}\frac{1}{2}\sum_{i:r(i,j)=1}\left((\theta^{(j)})^Tx^{(i)}-y^{(i,j)}\right)^2+\frac{\lambda}{2}\sum_{k=1}^{n}(\theta_k^{(j)})^2
+\min_{\theta^{(j)}}~~\frac{1}{2}\sum_{i:r(i,j)=1}\left((\theta^{(j)})^Tx^{(i)}-y^{(i,j)}\right)^2+\frac{\lambda}{2}\sum_{k=1}^{n}(\theta_k^{(j)})^2
 \]
-由于每个用户的线性回归都是独立的，所以我们可以放在一起训练：
+每个用户的线性回归在形式上相互独立，但可以把所有用户的目标函数相加，统一训练全部参数：
 \[
-\min_{\theta^{(1)},\ldots,\theta^{(n_u)}}J(\theta^{(1)},\ldots,\theta^{(n_u)}):=\frac{1}{2}\sum_{j=1}^{n_u}\sum_{i:r(i,j)=1}\left((\theta^{(j)})^Tx^{(i)}-y^{(i,j)}\right)^2+\frac{\lambda}{2}\sum_{j=1}^{n_u}\sum_{k=1}^{n}(\theta_k^{(j)})^2
+J(\theta^{(1)},\ldots,\theta^{(n_u)}):=\frac{1}{2}\sum_{j=1}^{n_u}\sum_{i:r(i,j)=1}\left((\theta^{(j)})^Tx^{(i)}-y^{(i,j)}\right)^2+\frac{\lambda}{2}\sum_{j=1}^{n_u}\sum_{k=1}^{n}(\theta_k^{(j)})^2
 \]
-训练过程可能用到导函数：
+为了使用梯度下降等方法优化，所需的偏导数为：
 \[
 \frac{\partial J}{\partial\theta^{(j)}_k}=\sum_{i:r(i,j)=1}\left((\theta^{(j)})^Tx^{(i)}-y^{(i,j)}\right)\theta^{(j)}_k+\lambda\theta_k^{(j)}[k>0]
 \]
-那么对于一个特征向量为 $x$ 的电影，用户 $j$ 对它的评分的预测值就是：$(\theta^{(j)})^Tx$. 
+训练完成后，对于特征向量为 $x$ 的任意电影，用户 $j$ 的预测评分为 $(\theta^{(j)})^Tx$. 可以据此对用户尚未评价的电影排序，并推荐预测评分较高的项目。
 
-基于内容的推荐算法的缺点在于，我们需要知道每部电影的特征向量，然而这一点通常很难做到。所以我们需要不是基于内容的推荐算法。
+基于内容的推荐算法有一个明显限制：必须预先知道每部电影的特征向量。然而，哪些特征最能解释用户偏好往往难以确定，人工标注大量电影也需要较高成本。为避免依赖显式内容特征，可以使用协同过滤，从用户评分数据中同时学习电影和用户的表示。
 
 
 \subsection{协同过滤算法}
 
 \paragraph{初始版本}
 
-现在我们不知道每部电影的特征向量，但是我们可以询问用户以得到用户的参数 $\theta^{(j)}$（譬如用户对不同类型电影的偏好），然后反过来，用 $\theta^{(j)}$ 去训练出 $x^{(i)}$，得到每部电影的特征。具体地，对于第 $i$ 部电影，我们可以学习它的特征 $x^{(i)}$，使得：
+现在假设电影特征未知，但可以通过询问用户等方式获得用户参数 $\theta^{(j)}$，例如用户对不同类型电影的偏好。这样便可以反过来把用户参数作为已知量，根据评分学习电影特征 $x^{(i)}$. 对于第 $i$ 部电影，只使用评价过该电影的用户，优化目标为：
 \[
-\min_{\theta^{(j)}}\frac{1}{2}\sum_{j:r(i,j)=1}\left((\theta^{(j)})^Tx^{(i)}-y^{(i,j)}\right)^2+\frac{\lambda}{2}\sum_{k=1}^{n}(x_k^{(i)})^2
+\min_{\theta^{(j)}}~~\frac{1}{2}\sum_{j:r(i,j)=1}\left((\theta^{(j)})^Tx^{(i)}-y^{(i,j)}\right)^2+\frac{\lambda}{2}\sum_{k=1}^{n}(x_k^{(i)})^2
 \]
-由于每部电影的线性回归是独立的，所以我们可以放在一起训练：
+与前面按用户训练参数类似，各电影特征的优化也相互独立，可以将它们的目标相加后统一写为：
 \[
-\min_{x^{(1)},\ldots,x^{(n_m)}}J(x^{(1)},\ldots,x^{(n_m)}):=\frac{1}{2}\sum_{i=1}^{n_m}\sum_{j:r(i,j)=1}\left((\theta^{(j)})^Tx^{(i)}-y^{(i,j)}\right)^2+\frac{\lambda}{2}\sum_{i=1}^{n_m}\sum_{k=1}^{n}(x_k^{(i)})^2
+J(x^{(1)},\ldots,x^{(n_m)}):=\frac{1}{2}\sum_{i=1}^{n_m}\sum_{j:r(i,j)=1}\left((\theta^{(j)})^Tx^{(i)}-y^{(i,j)}\right)^2+\frac{\lambda}{2}\sum_{i=1}^{n_m}\sum_{k=1}^{n}(x_k^{(i)})^2
 \]
-训练过程可能用到导函数：
+为了优化电影特征，所需的偏导数为：
 \[
 \frac{\partial J}{\partial x^{(i)}_k}=\sum_{j:r(i,j)=1}\left((\theta^{(j)})^Tx^{(i)}-y^{(i,j)}\right)\theta^{(i)}_k+\lambda x_k^{(i)}[k>0]
 \]
 
-总结一下，已知 $\theta^{(j)}$，我们可以学习 $x^{(i)}$；已知 $x^{(i)}$，我们可以学习 $\theta^{(j)}$. 于是我们有了一个大胆的想法——随机化一个 $\theta^{(j)}$，学习出 $x^{(i)}$，再用学习出的 $x^{(i)}$ 去学习 $\theta^{(j)}$，再用新的 $\theta^{(j)}$ 去学习 $x^{(i)}$……如此\textbf{反复迭代}，最终得到稳定的电影特征和用户参数。这就是最初始版本的协同过滤算法。
+总结而言，已知 $\theta^{(j)}$ 时可以学习 $x^{(i)}$，已知 $x^{(i)}$ 时也可以学习 $\theta^{(j)}$. 因此，可以先随机初始化一组用户参数，用它们学习所有电影特征；再固定新得到的电影特征，重新学习用户参数；随后继续使用新的用户参数更新电影特征。如此在两组参数之间\textbf{交替优化}，直至电影特征和用户参数都趋于稳定，这构成了协同过滤算法的初始版本。
 
 
 \paragraph{改进版本}
 
-事实上，我们没有反复迭代的必要。观察用 $\theta^{(j)}$ 训练 $x^{(i)}$ 的优化目标和用 $x^{(i)}$ 训练 $\theta^{(j)}$ 的优化目标，我们可以发现，它们的非正则化项其实是相同的，都是：$\sum\limits_{(i,j):r(i,j)=1}\left((\theta^{(j)})^Tx^{(i)}-y^{(i,j)}\right)^2$. 所以，我们将两个优化目标综合起来，优化以下函数即可：
+实际上，没有必要把两组参数拆开并手工反复交替训练。观察“固定用户参数学习电影特征”和“固定电影特征学习用户参数”这两个优化目标，可以发现它们的非正则化项完全相同，均为 $\sum_{(i,j):r(i,j)=1}\left((\theta^{(j)})^Tx^{(i)}-y^{(i,j)}\right)^2$. 因此，只需合并两边的正则化项，就可以把电影特征和用户参数放入同一个目标函数中同时优化：
+\begin{gather*}
+J(x^{(1)},\ldots,x^{(n_m)},\theta^{(1)},\ldots,\theta^{(n_u)})=\\\frac{1}{2}\sum_{(i,j):r(i,j)=1}\left((\theta^{(j)})^Tx^{(i)}-y^{(i)}\right)^2+\frac{\lambda}{2}\sum_{i=1}^{n_m}\sum_{k=1}^n(x^{(i)}_k)^2+\frac{\lambda}{2}\sum_{j=1}^{n_u}\sum_{k=1}^n(\theta^{(j)}_k)^2
+\end{gather*}
+值得注意的是，在改进版本中，特征由模型自动学习。由于电影特征和用户参数可以共同吸收整体偏移，模型中\textbf{无须额外加入偏置项}，因此 $x^{(i)}\in\mathbb R^n,\theta^{(j)}\in\mathbb R^n$.
 
-\begin{align*}
-&\min_{x^{(1)},\ldots,x^{(n_m)},\theta^{(1)},\ldots,\theta^{(n_u)}}J(x^{(1)},\ldots,x^{(n_m)},\theta^{(1)},\ldots,\theta^{(n_u)})\\
-=&\frac{1}{2}\sum_{(i,j):r(i,j)=1}\left((\theta^{(j)})^Tx^{(i)}-y^{(i)}\right)^2+\frac{\lambda}{2}\sum_{i=1}^{n_m}\sum_{k=1}^n(x^{(i)}_k)^2+\frac{\lambda}{2}\sum_{j=1}^{n_u}\sum_{k=1}^n(\theta^{(j)}_k)^2
-\end{align*}
-
-值得注意的是，在综合起来之前，$n$ 是我们人为选定的特征维度数，是一个定值；而现在，$n$ 变成了一个超参数，因此我们也\textbf{没有必要加上偏置项}，所以这里 $x^{(i)}\in\mathbb R^n,\theta^{(j)}\in\mathbb R^n$. 
-
-上式的导函数为：
+上式的偏导数为：
 \begin{align*}
 &\frac{\partial J}{\partial\theta^{(j)}_k}=\sum_{i:r(i,j)=1}\left((\theta^{(j)})^Tx^{(i)}-y^{(i,j)}\right)\theta^{(j)}_k+\lambda\theta_k^{(j)}\\
 &\frac{\partial J}{\partial x^{(i)}_k}=\sum_{j:r(i,j)=1}\left((\theta^{(j)})^Tx^{(i)}-y^{(i,j)}\right)x^{(i)}_k+\lambda x_k^{(i)}
 \end{align*}
-我们现在可以梯度下降或者用其他算法（如 $\text{LBFGS}$ 等）完成优化了。
+得到目标函数和梯度后，可以使用梯度下降或其他算法（如 LBFGS 等）进行优化。
 
 
 \paragraph{向量化版本}
 
-为了代码的运行效率，将该算法向量化是必要的。
+逐项遍历所有电影和用户会产生较大开销。为提高代码运行效率，需要将协同过滤算法写成矩阵形式并进行并行计算。
 
-构建矩阵 $Y:=\begin{bmatrix}y^{(i,j)}\end{bmatrix}\in\mathbb R^{n_m\times n_u}$，即第 $i$ 行第 $j$ 列表示用户 $j$ 对电影 $i$ 的评分；矩阵 $X:=\begin{bmatrix}(x^{(1)})^T\\ \vdots\\ (x^{(n_m)})^T\end{bmatrix}\in\mathbb R^{n_m\times n}$，即第 $i$ 行表示电影 $i$ 的特征向量；矩阵 $\Theta:=\begin{bmatrix}(\theta^{(1)})^T\\ \vdots\\ (\theta^{(n_u)})^T\end{bmatrix}\in\mathbb R^{n_u\times n}$，即第 $j$ 行表示用户 $j$ 的参数向量。如此，线性回归的预测值可以构成矩阵：
+构造评分矩阵 $Y:=\begin{bmatrix}y^{(i,j)}\end{bmatrix}\in\mathbb R^{n_m\times n_u}$，其第 $i$ 行第 $j$ 列表示用户 $j$ 对电影 $i$ 的评分；构造电影特征矩阵 $X:=\begin{bmatrix}(x^{(1)})^T\\ \vdots\\ (x^{(n_m)})^T\end{bmatrix}\in\mathbb R^{n_m\times n}$，其第 $i$ 行是电影 $i$ 的特征向量；再构造用户参数矩阵 $\Theta:=\begin{bmatrix}(\theta^{(1)})^T\\ \vdots\\ (\theta^{(n_u)})^T\end{bmatrix}\in\mathbb R^{n_u\times n}$，其第 $j$ 行是用户 $j$ 的参数向量。由此，所有用户对所有电影的预测评分可以一次写成矩阵：
 \[
 X\Theta^T\in\mathbb R^{n_m\times n_u}
 \]
-利用 \texttt{numpy} 的语法可以简单地写出代价函数及其导函数的向量化版本，详见代码。
+利用 \texttt{numpy} 的语法可以简洁地实现代价函数及其梯度的向量化计算，详见代码。
 
 
 \subsection{代码实现}
@@ -131,7 +128,7 @@ xt = res.x
        -0.40793964, -0.60753772])
 \end{lstlisting}
 
-用该参数找到第一个用户预测评分最高的 $10$ 部电影：
+优化得到电影特征和用户参数后，先计算完整的预测评分矩阵，再从中选取第一个用户预测评分最高的 $10$ 部电影：
 
 \begin{lstlisting}[language=Python]
 xt = np.load('xt.npy')

@@ -7,42 +7,42 @@
 \[
 J(\theta)=-\frac{1}{m}\left[\sum_{i=1}^my^{(i)}\ln(h_\theta(x^{(i)}))+(1-y^{(i)})\ln(1-h_\theta(x^{(i)}))\right]+\frac{\lambda}{2m}\sum_{j=1}^n\theta_j^2
 \]
-我们在第四篇中通过极大似然法解释了它的来历，这个代价函数被称作「交叉熵代价函数」，与我们在线性回归中使用的「二次代价函数」形成对比。
+第 \ref{sec:chapter4} 节已通过极大似然法说明其来源。该函数称为\textbf{交叉熵代价函数}；它与线性回归中衡量连续预测误差的二次代价函数不同。
 
-在神经网络中，我们沿用交叉熵代价函数。具体地，对于一个 $K$ 分类的神经网络而言，它可以看作是从输入到 $K$ 个二分类输出的过程：$x\mapsto h_\Theta(x)$，我们设其代价函数为每一个二分类的\textbf{交叉熵代价函数之和}：
+神经网络同样采用交叉熵代价函数。对于 $K$ 分类问题，输出层包含 $K$ 个分量，每个分量表示输入属于相应类别的预测结果，因此整个网络可以看作从输入到 $K$ 个二分类输出的映射：$x\mapsto h_\Theta(x)$. 代价函数定义为各输出分量对应的\textbf{交叉熵代价之和}，并对全部训练样本取平均：
 \[
 J(\Theta)=-\frac{1}{m}\left[\sum_{i=1}^m\sum_{k=1}^Ky^{(i)}_k\ln\left(h_\Theta(x^{(i)})_k\right)+(1-y_k^{(i)})\ln\left(1-h_\Theta(x^{(i)})_k\right)\right]+\frac{\lambda}{2m}\sum_{l=1}^{L-1}\sum_{i=1}^{s_l}\sum_{j=1}^{s_{l+1}}\left(\Theta_{ji}^{(l)}\right)^2
 \]
 
-其中：$h_\Theta(x^{(i)})\in\mathbb R^K$，表示从第 $i$ 个输入经由神经网络得到的输出结果，$h_\Theta(x^{(i)})_k$ 表示其第 $k$ 维. 
+其中，$h_\Theta(x^{(i)})\in\mathbb R^K$ 表示第 $i$ 个输入经过神经网络得到的输出，$h_\Theta(x^{(i)})_k$ 表示其第 $k$ 个分量。
 
-> 注意这里有一个符号混用的地方：上标 $^{(i)}$ 在 $x^{(i)}$ 和 $y^{(i)}$ 中表示第 $i$ 个数据的输入（$\in\mathbb R^{n+1}$）和输出（$\in\mathbb R^{K}$），但是在 $\Theta^{(l)}$ 中表示第 $l$ 层的 $\Theta$（$\in \mathbb R^{s_{l+1}\times (s_l+1)}$）. 
+\begin{note}
+这里存在符号复用：$x^{(i)}$ 和 $y^{(i)}$ 的上标 $^{(i)}$ 表示第 $i$ 个样本，其维数分别为 $\in\mathbb R^{n+1}$ 和 $\in\mathbb R^{K}$；$\Theta^{(l)}$ 的上标表示第 $l$ 层的参数矩阵，其维数为 $\in \mathbb R^{s_{l+1}\times (s_l+1)}$.
+\end{note}
 
-现在我们的目标即是最小化代价函数 $J(\Theta)$，并找到最小时的参数 $\Theta$. 
-
-我们欲使用梯度下降法解决这个问题，所以我们需要计算 $\frac{\partial J}{\partial \Theta_{ji}^{(l)}}$，计算方法就是反向传播算法。
+训练神经网络的目标是找到使代价函数 $J(\Theta)$ 最小的参数 $\Theta$. 若使用梯度下降法，就需要计算代价函数关于每一层每一个参数的偏导数 $\frac{\partial J}{\partial \Theta_{ji}^{(l)}}$. 直接逐项求导十分繁琐，而反向传播算法能够利用链式法则，从输出层向输入层高效地完成这一计算。
 
 \subsection{反向传播算法}
 
 \paragraph{推导}
 
-为了推导方便，先假设只有一组数据 $(x,y)$，这样可以省去上标和求和的麻烦。我们对第 $l+1$ 层的第 $j$ 个神经元定义一个误差：
+为简化推导，先只考虑单个样本 $(x,y)$，从而省略样本上标和对样本的求和。对第 $l+1$ 层的第 $j$ 个神经元定义误差：
 \[
 \delta_j^{(l+1)}=\frac{\partial J}{\partial z_j^{(l+1)}}
 \]
-其中 $z_j^{(l+1)}=\sum\limits_{k=0}^{s_{l}}\Theta^{(l)}_{jk}a^{(l)}_{k}$，其实就是把对 $a_j^{(l+1)}$ 的逻辑回归单独拎出来看，取 $\text{sigmoid}$ 前的那个求和值。换句话说，$a^{(l+1)}_j=g\left(z_j^{(l+1)}\right)$. 
+其中，$z_j^{(l+1)}=\sum\limits_{k=0}^{s_{l}}\Theta^{(l)}_{jk}a^{(l)}_{k}$ 表示神经元 $a_j^{(l+1)}$ 在 $\text{sigmoid}$ 前得到的加权和，即 $a^{(l+1)}_j=g\left(z_j^{(l+1)}\right)$.
 
-于是乎，我们有：
+根据链式法则，有：
 \[
 \frac{\partial J}{\partial \Theta^{(l)}_{ji}}=\frac{\partial J}{\partial z_j^{(l+1)}}\cdot\frac{\partial z_j^{(l+1)}}{\partial\Theta_{ji}^{(l)}}=a_i^{(l)}\delta_j^{(l+1)}
 \]
-写作矩阵形式：
+写成矩阵形式：
 \[
 \boxed{\Delta^{(l)}=\delta^{(l+1)}\cdot(a^{(l)})^T}
 \]
-所以现在问题转化为求解 $\delta^{(l+1)}$. 
+因此，一旦得到各层的 $\delta^{(l+1)}$，就能直接计算相应参数矩阵的梯度，问题转化为求解这些误差向量。
 
-采用递推的思想。首先来算输出层，即 $\delta_j^{(L)}$：
+误差需要从输出层开始递推。首先计算输出层的误差 $\delta_j^{(L)}$：
 \begin{align*}
 \delta_j^{(L)}&=\frac{\partial J}{\partial z_j^{(L)}}=\frac{\partial J}{\partial a_j^{(L)}}\cdot\frac{\partial a_j^{(L)}}{\partial z_j^{(L)}}\\
 &=\frac{\partial J}{\partial a_j^{(L)}}\cdot g'\left(z_j^{(L)}\right)\\
@@ -56,20 +56,13 @@ J(\Theta)=-\frac{1}{m}\left[\sum_{i=1}^m\sum_{k=1}^Ky^{(i)}_k\ln\left(h_\Theta(x
 \]
 
 \begin{note}
-上面推导过程的一些注释：
-
-关于第二行，请注意：$a^{(L)}=g(z^{(L)})$；
-
-关于第三行，请注意 $\text{sigmoid}$ 函数的一个很好的性质：$g'(z)=g(z)(1-g(z))$；
-
-以及，关于偏导项的计算，请注意 $a^{(L)}=h_\Theta(x)$，所以 $J(\Theta)$ 在现在的假设条件下可以写作：
+上述推导的第二行使用了 $a^{(L)}=g(z^{(L)})$，第三行使用了 $\text{sigmoid}$ 函数的重要性质 $g'(z)=g(z)(1-g(z))$. 此外，由 $a^{(L)}=h_\Theta(x)$，故 $J(\Theta)$ 在当前假设条件下可写为：
 \[
 J(\Theta)=-\left[\sum_{k=1}^Ky_k\ln(a^{(L)}_k)+(1-y_k)\ln(1-a_k^{(L)})\right]+\frac{\lambda}{2}\sum_{l=1}^{L-1}\sum_{i=1}^{s_l}\sum_{j=1}^{s_{l+1}}\left(\Theta_{ji}^{(l)}\right)^2
 \]
 \end{note}
 
-
-现在计算第 $l$ 层（$2\leqslant l<L$）的 $\delta^{(l)}$：
+得到输出层误差后，再通过链式法则向前一层传播。下面递推计算第 $l$ 层（$2\leqslant l<L$）的 $\delta^{(l)}$：
 \begin{align*}
 \delta_j^{(l)}&=\frac{\partial J}{\partial z_j^{(l)}}\\
 &=\frac{\partial J}{\partial z^{(l+1)}}\cdot\frac{\partial z^{(l+1)}}{\partial a_j^{(l)}}\cdot\frac{\partial a_j^{(l)}}{\partial z_j^{(l)}}\\
@@ -80,20 +73,19 @@ J(\Theta)=-\left[\sum_{k=1}^Ky_k\ln(a^{(L)}_k)+(1-y_k)\ln(1-a_k^{(L)})\right]+\f
 \[
 \boxed{\delta^{(l)}=\left({\Theta^{(l)}}^T\delta^{(l+1)}\right)*\left(a^{(l)}*(1-a^{(l)})\right)}
 \]
-其中 $*$ 表示两个向量对应位置相乘。
+其中，$*$ 表示两个向量对应位置逐元素相乘。
 
 
 \paragraph{步骤总结}
 
-以上是对一组数据的推导，我们得到了三个重要的结果：
+综合前面的推导，对于单个样本可以得到以下三个重要结果：
 \begin{align*}
 &\Delta^{(l)}=\delta^{(l+1)}\cdot(a^{(l)})^T&&1\leqslant l<L\\
 &\delta^{(L)}=a^{(L)}-y\\
 &\delta^{(l)}=\left({\Theta^{(l)}}^T\delta^{(l+1)}\right)*\left(a^{(l)}*(1-a^{(l)})\right)&&2\leqslant l<L
 \end{align*}
-而 $m$ 组数据只需要在一些地方进行累加即可，具体如下：
 
-设数据集为：$\left\{(x^{(i)},y^{(i)})\mid 1\leqslant i\leqslant m\right\}$，则反向传播算法的步骤为：
+对于 $m$ 个样本，计算过程本身不变，只需累加即可。具体而言，设数据集为 $\left\{(x^{(i)},y^{(i)})\mid 1\leqslant i\leqslant m\right\}$，反向传播算法的步骤如下：
 
 \begin{enumerate}
     \item 所有 $\Delta^{(l)}$ 置零；
@@ -110,35 +102,36 @@ J(\Theta)=-\left[\sum_{k=1}^Ky_k\ln(a^{(L)}_k)+(1-y_k)\ln(1-a_k^{(L)})\right]+\f
        \frac{1}{m}\Delta_{ij}^{(l)}&\text{if }j=0
        \end{cases}
        \]
-       这就是我们的偏导数矩阵：$\frac{\partial J}{\partial \Theta_{ij}^{(l)}}=D^{(l)}_{ij}$. 
+       由此得到梯度矩阵：$\frac{\partial J}{\partial \Theta_{ij}^{(l)}}=D^{(l)}_{ij}$. 
 \end{enumerate}
 
-现在，我们可以用 $D_{ij}^{(l)}$ 做梯度下降了。注意一点，我们的参数 $\Theta^{(l)}$ 应该初始化为 $[-\epsilon,\epsilon]$ 中的随机值。
+随后即可使用 $D_{ij}^{(l)}$ 更新每一层参数。参数 $\Theta^{(l)}$ 应初始化为 $[-\epsilon,\epsilon]$ 内的随机值，而不能全部初始化为同一个数；否则同一层的神经元会得到完全相同的梯度，并始终学习相同特征，无法打破对称性。
 
 
 \subsection{梯度检验}
 
-写神经网络反向传播的代码时很容易写 bug，包括一些从结果并不能发现的 bug。梯度检验可以帮助发现这些 bug。
+反向传播涉及多层矩阵运算、偏置项和正则化，代码很容易出现错误，其中一些错误甚至不会让最终结果立即表现出明显异常。梯度检验通过独立的数值方法近似梯度，可以用来验证反向传播计算是否正确。
 
-我们可以数值近似 $J(\theta)$ 的各偏导：
+具体而言，可以使用差分数值近似 $J(\theta)$ 的各偏导数：
 \[
 \frac{\partial}{\partial \theta_k}J(\theta)\approx\frac{J(\theta_1,\cdots,\theta_k+
 \epsilon,\cdots,\theta_n)-J(\theta_1,\cdots,\theta_k-
 \epsilon,\cdots,\theta_n)}{2\epsilon}
 \]
+将这些数值估计与反向传播得到的 $D_{ij}^{(l)}$ 对应位置逐一比较，二者应当非常接近。
 
-现在我们可以比较这些偏导估计值与 $D_{ij}^{(l)}$ 对应位置的值，它们应该非常接近。
-
-注意一点：梯度检验耗时巨大，一旦验证了神经网络反向传播的代码正确后，不应进行梯度检验（删掉/注释掉）。
+\begin{note}
+梯度检验需要为每个参数多次计算代价函数，计算开销很大，因此仅应在调试阶段使用。确认反向传播实现正确后，应将相关代码删除或关闭，正式训练时只保留反向传播。 
+\end{note}
 
 
 \subsection{代码实现}
 
-这次用的数据集依旧是手写数字识别的数据集，共 $5000$ 组数据，每组数据输入是一个由 $20\times20$ 灰度矩阵压缩而来的 $400$ 维向量，输出是 $0$ 到 $9$ 之间的整数。
+本节仍使用手写数字数据集，共 $5000$ 个样本。每个输入是由 $20\times20$ 灰度图像展开得到的 $400$ 维向量，输出为 $0$ 到 $9$ 之间的整数。
 
 \paragraph{第一部分·代价函数与前向传播}
 
-前向传播与上一节的代码没有什么本质的区别，不过这里将其一般化，可适用于 $L$ 层的神经网络且 $m$ 个数据同时计算：
+前向传播与上一节基本相同，不过这里将实现一般化，使其能够处理任意 $L$ 层神经网络，并通过矩阵运算同时计算 $m$ 个样本：
 
 \begin{lstlisting}[language=Python]
 def forwardPropagation():
@@ -151,7 +144,7 @@ def forwardPropagation():
 	return a
 \end{lstlisting}
 
-当然只计算一个数据也是可以的：
+若只需要处理单个样本，也可以使用相同的逐层计算方式：
 
 \begin{lstlisting}[language=Python]
 def forwardPropagation(x):
@@ -167,7 +160,7 @@ def forwardPropagation(x):
 	return a
 \end{lstlisting}
 
-代价函数及其正则化：
+代价函数及其正则化实现如下：
 
 \begin{lstlisting}[language=Python]
 def J(lamb):
@@ -180,9 +173,8 @@ def J(lamb):
 	return res
 \end{lstlisting}
 
-使用 `ex4weights.mat` 中给定的参数 $\Theta$，在无正则化时，准确率为 $97.52\%$，代价为 $0.28762916516131865$；
-
-在正则化时（$\lambda=1$），准确率为 $97.52\%$，代价为 $0.3844877962428937$。
+先使用 \texttt{ex4weights.mat} 中给定的参数 $\Theta$ 检验前向传播和代价函数实现。无正则化时，准确率为 $97.52\%$，代价为 $0.28762916516131865$；
+有正则化时（$\lambda=1$），准确率为 $97.52\%$，代价为 $0.3844877962428937$.
 
 
 \paragraph{第二部分·反向传播}
@@ -237,7 +229,7 @@ for l in range(1, L):
             print(D[l][i, j], (J2 - J1) / 0.002)
 \end{lstlisting}
 
-现在我们可以开始训练了！代价随迭代次数增加的变化如下：
+现在即可开始训练。代价随迭代次数增加的变化如下：
 
 \begin{figure}[H]
     \centering
@@ -260,7 +252,7 @@ for l in range(1, L):
 
 \paragraph{附·使用 \texttt{scipy} 优化}
 
-自己写的梯度下降跑得很慢，使用 \texttt{scipy.optimize.minimize} 来最小化 $J(\Theta)$，method 选用 $\text{CG}$，结果如下：
+逐样本计算的梯度下降实现运行速度较慢。由于前面已经实现了代价函数及其梯度，也可以直接交给通用优化器求解。这里使用 \texttt{scipy.optimize.minimize} 最小化 $J(\Theta)$，并将 \texttt{method} 设为 $\text{CG}$. 结果如下：
 
 \begin{lstlisting}
      fun: 0.3139915007113895
@@ -293,4 +285,4 @@ for l in range(1, L):
     \end{tabularx}
 \end{table}
 
-当然，再次强调，由于没有划分训练集、验证集、测试集，这个准确率并不能说明问题。
+注意：训练集准确率并不能作为模型评估结果。

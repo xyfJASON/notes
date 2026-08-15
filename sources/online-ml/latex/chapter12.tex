@@ -3,35 +3,35 @@
 
 \subsection{数据降维}
 
-我们的数据特征常常包含众多维度，但它们中的有些维度其实没有存在的必要。最极端的情况就是某一维度是其他若干维度的线性组合，那么这一维度就完全可以丢掉；但现实不会这么精准，如果某一维度是其他若干维度的线性组合加上微小的扰动，我们其实也可以将其丢掉。这就是数据降维。
+数据往往包含较多特征，其中部分维度可能存在冗余。最极端的情形是，某个特征能够由其他若干特征的线性组合精确表示，那么它不会提供新的信息，可以直接舍去。实际数据通常不会满足如此精确的关系，但如果某个特征只是在其他特征的线性组合上叠加了很小的扰动，也可以在允许少量信息损失的前提下将其去除。这一过程称为数据降维。
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{figs/Chap_12_data_compression.png}
 \end{figure}
 
-数据降维有众多算法可以完成，主成分分析即是其中之一。
+主成分分析是常用的数据降维方法之一。
 
 
 \subsection{主成分分析}
 
-主成分分析（Principal Component Analysis）的基本思想是：假设原始数据的特征有 $n$ 维，我们想将其缩减到 $k$ 维，那么我们只需要在原来的 $n$ 维空间中找到一个 $k$ 维的子空间，使得所有数据到这个子空间的距离平方和最小；此时，原数据在这个子空间上的投影就是我们新的 $k$ 维的数据。
+主成分分析（Principal Component Analysis，PCA）的基本思想是：假设原始数据具有 $n$ 维特征，希望将其压缩到 $k$ 维，就在原来的 $n$ 维空间中寻找一个 $k$ 维子空间，使所有样本到该子空间的距离平方和最小。这个子空间尽可能保留了数据变化最显著的方向，而每个样本在子空间上的投影就是新的 $k$ 维表示。
 
 \paragraph{数学推导}
 
-为方便，我们首先将数据中心化，即使得数据的平均值在原点处。<u>一个获得所需要的 $k$ 维子空间的简单方式是：找到一个合适的 $n$ 维空间，直接选取前 $k$ 维作为子空间</u>。具体而言，对于一个数据点 $x=\begin{bmatrix}x_1\\x_2\\\vdots\\x_n\end{bmatrix}\in\mathbb R^n$，设我们要找的 $n$ 维空间的规范正交基为 $u_1,u_2,\ldots,u_n$，则 $x$ 在其中的新坐标为：
+为便于推导，首先对数据进行中心化，使所有样本的平均位置位于原点。求解所需 $k$ 维子空间的一种方式是：先在原空间中寻找一组合适的 $n$ 维标准正交基，再选择其中前 $k$ 个基向量张成目标子空间。对于数据点 $x=(x_1,x_2,\cdots,x_n)^T\in\mathbb R^n$，设这组标准正交基为 $u_1,u_2,\ldots,u_n$，则 $x$ 在新基下第 $j$ 个方向的坐标为：
 \[
 y_j=x\cdot u_j=x_1u_{j1}+x_2u_{j2}+\cdots+x_nu_{jn}
 \]
-它到前 $k$ 维形成的子空间（即以 $u_1,u_2,\ldots,u_k$ 为基底的子空间）的距离之平方为：
+于是，$y=(y_1,y_2,\cdots,y_k)^T$ 到前 $k$ 维形成的子空间（即以 $u_1,u2,\cdots,u_k$ 为基底的子空间）的距离之平方为：
 \[
 {y_{k+1}}^2+{y_{k+2}}^2+\cdots+{y_n}^2
 \]
-假设我们有 $m$ 个数据 $x^{(1)},x^{(2)},\ldots,x^{(m)}$，于是我们的优化目标为：
+对于 $m$ 个样本 $x^{(1)},x^{(2)},\ldots,x^{(m)}$，将每个样本的这部分距离相加，得到优化目标：
 \[
-\min \sum_{i=1}^m {y^{(i)}_{k+1}}^2+{y^{(i)}_{k+2}}^2+\cdots+{y^{(i)}_{n}}^2
+\min~\sum_{i=1}^m {y^{(i)}_{k+1}}^2+{y^{(i)}_{k+2}}^2+\cdots+{y^{(i)}_{n}}^2
 \]
-又由于在不同的基下 ${||x||}^2$ 都是一个定值，于是最小化上述距离等价于：
+由于正交变换不会改变向量长度，${||x||}^2$ 在不同正交基下都是定值。一个样本在前 $k$ 个方向上的投影长度平方与其到子空间的距离平方之和等于原向量长度平方，因此最小化上述距离等价于最大化前 $k$ 个方向上的投影平方和：
 \[
 \max \sum_{i=1}^m{y^{(i)}_1}^2+{y^{(i)}_2}^2+\cdots+{y^{(i)}_k}^2
 \]
@@ -39,70 +39,66 @@ y_j=x\cdot u_j=x_1u_{j1}+x_2u_{j2}+\cdots+x_nu_{jn}
 \[
 \max \sum_{i=1}^m {y_r^{(i)}}^2,\quad r=1,2,\ldots,k
 \]
-这就是我们要解决的问题。
-
 由于
 \begin{align*}
 \sum_{i=1}^m{y^{(i)}_r}^2&=\sum_{i=1}^m(x^{(i)}\cdot u_r)^2\\
 &=\sum_{i=1}^m\left(u_r^Tx^{(i)}\right)\left({x^{(i)}}^Tu_r\right)\\
 &=u_r^T\left(\sum_{i=1}^mx^{(i)}{x^{(i)}}^T\right) u_r
 \end{align*}
-这是一个正定二次型，$\sum\limits_{i=1}^mx^{(i)}{x^{(i)}}^T$ 是一个正定矩阵，可以进行奇异值分解：
+这是一个正定二次型，其中矩阵 $\sum_{i=1}^mx^{(i)}{x^{(i)}}^T$ 是一个正定矩阵。对该矩阵进行特征值分解：
 \[
-\sum_{i=1}^mx^{(i)}{x^{(i)}}^T=U\Sigma U^T
+\sum_{i=1}^mx^{(i)}{x^{(i)}}^T=U\Lambda U^T
 \]
-其中，$U$ 是正交矩阵，$\Sigma$ 是对角矩阵 $\begin{bmatrix}\sigma_1&\cdots&0\\\vdots&\ddots&\vdots\\0&\cdots&\sigma_n\end{bmatrix}$，$\sigma_1,\ldots,\sigma_n$ 是奇异值，$\sigma_1>\cdots>\sigma_n$. 
+其中，$U$ 是正交矩阵；$\Lambda$ 是对角矩阵 $\begin{bmatrix}\lambda_1&\cdots&0\\\vdots&\ddots&\vdots\\0&\cdots&\lambda_n\end{bmatrix}$，$\lambda_1,\ldots,\lambda_n$ 是特征值，$\lambda_1>\cdots>\lambda_n$.
 
 令 $v_r=U^Tu_r$，由于 $U$ 正交，所以 $v_r$ 也是单位向量，代回得到：
 \begin{align*}
-\sum_{i=1}^m{y^{(i)}_r}^2&=u_r^TU\Sigma U^Tu_r\\
-&=(U^T u_r)^T\Sigma(U^Tu_r)\\
-&=v_r^T\Sigma v_r\\
-&=\sigma_1v_{r1}^2+\sigma_2v_{r2}^2+\cdots+\sigma_nv_{rn}^2
+\sum_{i=1}^m{y^{(i)}_r}^2&=u_r^TU\Lambda U^Tu_r\\
+&=(U^T u_r)^T\Lambda(U^Tu_r)\\
+&=v_r^T\Lambda v_r\\
+&=\lambda_1v_{r1}^2+\lambda_2v_{r2}^2+\cdots+\lambda_nv_{rn}^2
 \end{align*}
-所以我们的优化目标变成了：
-\begin{align*}
-&\max\sum_{i=1}^n\sigma_iv_{ri}^2\\
-&\text{s.t.}\begin{cases}\sum\limits_{i=1}^nv_{ri}^2=1\\\sigma_1>\cdots>\sigma_n\end{cases}
-\end{align*}
-很显然，它的解是：$v_{r1}=1,v_{r2}=\cdots=v_{rn}=0$，即 $v_r=\begin{bmatrix}1\\0\\\vdots\\0\end{bmatrix}$。又由于 $u_r=Uv_r$，<u>所以我们要找的 $n$ 维空间的各个基向量就是矩阵 $\sum\limits_{i=1}^mx^{(i)}{x^{(i)}}^T$ 的各个奇异值对应的奇异向量</u>，我们要降维到的 $k$ 维子空间的各个基向量就是前 $k$ 个奇异向量，对原来的数据进行基变换，就得到了降维后的数据。
+故优化目标写作：
+\[
+\max\sum_{i=1}^n\lambda_iv_{ri}^2
+\quad\quad\text{s.t.}\begin{cases}\sum_{i=1}^nv_{ri}^2=1\\\lambda_1>\cdots>\lambda_n\end{cases}
+\]
+为了使加权和最大，应优先把单位向量的分量放在最大特征值对应的位置，因此其解为 $v_{r1}=1,v_{r2}=\cdots=v_{rn}=0$，即 $v_r=(1,0,\cdots,0)^T$. 对多个主成分还要满足彼此正交的约束，因此依次选择后续特征值对应的方向。又由于 $u_r=Uv_r$，所需标准正交基就是矩阵 $\sum_{i=1}^mx^{(i)}{x^{(i)}}^T$ 的各个特征向量。选取前 $k$ 个特征向量作为目标子空间的基，再对原数据进行基变换，即可得到降维后的数据。
 
 
 \paragraph{步骤总结}
 
-总结一下，主成分分析的推导过程稍显复杂，但是它的实现很简单，主要是以下步骤：
+虽然上述推导涉及子空间、二次型与特征值分解，但主成分分析的实际实现较为直接，可以概括为以下步骤：
 
 \begin{enumerate}
-    \item 计算矩阵 $\sum\limits_{i=1}^mx^{(i)}{x^{(i)}}^T$；
-    更简单的表达是：设矩阵 $X=\begin{bmatrix}{x^{(1)}}^T\\{x^{(2)}}^T\\\vdots\\{x^{(m)}}^T\end{bmatrix}$ 为数据集，那么计算矩阵 $X^TX$ 即可。
-    \item 进行奇异值分解，得到奇异向量；
-    \item 选取前 $k$ 个奇异向量作为降维后的空间的基向量，构成基变换矩阵 $C$；
+    \item 对数据中心化后，计算矩阵 $X^TX=\sum_{i=1}^mx^{(i)}{x^{(i)}}^T$；
+    \item 进行特征值分解，得到特征向量；
+    \item 选取前 $k$ 个特征向量作为降维后的空间的基向量，构成基变换矩阵 $C$；
     \item 对于原数据 $x$，取 $z=C^Tx$ 为其降维后的数据。
-    更简单的表达是：取 $Z=XC$，则 $Z$ 是降维后的数据集。
 \end{enumerate}
 
 
 \paragraph{主成分数量的选择}
 
-那么在实践中，我们到底选择多大的 $k$ 值比较好呢？对此，我们定义一个平均误差为：
+实际应用中，$k$ 过小会损失过多信息，过大又无法达到理想的压缩效果，因此需要根据重构误差选择主成分数量。定义平均重构误差：
 \[
 \frac{1}{m}\sum_{i=1}^m||x^{(i)}-x_\text{approx}^{(i)}||^2
 \]
-其中，$x_\text{approx}^{(i)}$ 表示数据 $x^{(i)}$ 在我们找到的 $k$ 维子空间上的投影。再定义一个总方差为：
+其中，$x_\text{approx}^{(i)}$ 表示数据 $x^{(i)}$ 在所选 $k$ 维子空间上的投影重新映射回原空间后得到的近似。再定义数据的总方差：
 \[
 \frac{1}{m}\sum_{i=1}^m||x^{(i)}||^2
 \]
-则一般的，我们会选择最小的 $k$ 使得：
+用平均重构误差除以总方差，可以衡量降维丢失的信息比例。通常选择满足下式的最小 $k$：
 \[
-\frac{\frac{1}{m}\sum\limits_{i=1}^m||x^{(i)}-x_\text{approx}^{(i)}||^2}{\frac{1}{m}\sum\limits_{i=1}^m||x^{(i)}||^2}\leqslant 0.01
+\frac{\frac{1}{m}\sum_{i=1}^m||x^{(i)}-x_\text{approx}^{(i)}||^2}{\frac{1}{m}\sum_{i=1}^m||x^{(i)}||^2}\leqslant 0.01
 \]
-并称之为「$99\%$ 的方差得以保留」。
+该比例不超过 $0.01$，表示重构误差只占总方差的 $1\%$，因此称为保留了 $99\%$ 的方差。
 
-这个式子看起来并不好计算，但事实上，借助我们的奇异值，可以证明，对于给定的 $k$：
+直接对每个候选 $k$ 重构全部样本并计算误差较为繁琐。利用特征值可以更方便地计算该比例；对于给定的 $k$，有：
 \[
-\frac{\frac{1}{m}\sum\limits_{i=1}^m||x^{(i)}-x_\text{approx}^{(i)}||^2}{\frac{1}{m}\sum\limits_{i=1}^m||x^{(i)}||^2}=1-\frac{\sum\limits_{i=1}^k\sigma_k}{\sum\limits_{i=1}^n\sigma_i}
+\frac{\frac{1}{m}\sum_{i=1}^m||x^{(i)}-x_\text{approx}^{(i)}||^2}{\frac{1}{m}\sum_{i=1}^m||x^{(i)}||^2}=1-\frac{\sum_{i=1}^k\lambda_k}{\sum_{i=1}^n\lambda_i}
 \]
-这就好算了。
+因此，只需考察前 $k$ 个特征值占全部特征值之和的比例，就可以选择主成分数量。
 
 
 \subsection{代码实现}
@@ -116,7 +112,7 @@ y_j=x\cdot u_j=x_1u_{j1}+x_2u_{j2}+\cdots+x_nu_{jn}
     \includegraphics[width=0.5\linewidth]{figs/Chap_12_Figure_0.png}
 \end{figure}
 
-主成分分析代码：
+主成分分析的代码如下：
 
 \begin{lstlisting}[language=Python]
 def PCA(X, dim = -1):
@@ -150,7 +146,7 @@ def PCA(X, dim = -1):
 	return Xnorm @ u[:, :dim], normalization(Xnorm @ u[:, :dim] @ u[:, :dim].T, 0)
 \end{lstlisting}
 
-得到映射的点：
+投影结果如下：
 
 \begin{figure}[H]
     \centering
@@ -159,21 +155,23 @@ def PCA(X, dim = -1):
 
 \paragraph{人脸特征压缩}
 
-我们给出了 $5000$ 张人脸照片，每张照片含有 $32\times32$ 的灰度像素，形成维度为 $1024$ 的向量作为其特征。前 $100$ 张照片如图所示：
+数据集包含 $5000$ 张人脸图像，每张图像由 $32\times32$ 个灰度像素组成。将像素矩阵展开后，每张人脸对应一个 $1024$ 维特征向量。由于相邻像素和不同人脸之间存在较强相关性，这类高维数据适合使用主成分分析进行压缩。前 $100$ 张图像如下：
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\linewidth]{figs/Chap_12_Figure_2.png}
+    \includegraphics[width=0.5\linewidth]{figs/Chap_12_Figure_2.png}
 \end{figure}
 
-现在将其压缩为 $\text{dim}={36,100}$ 维的数据，恢复后结果如下：
+分别将数据压缩至 $\text{dim}={36,100}$ 维，再从低维表示恢复到原来的 $1024$ 维空间。通过重构图像可以直观比较不同主成分数量保留的信息，结果如下：
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\linewidth]{figs/Chap_12_Figure_dim=36.png}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\linewidth]{figs/Chap_12_Figure_dim=100.png}
+    \begin{minipage}{0.45\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{figs/Chap_12_Figure_dim=36.png}
+    \end{minipage}
+    \begin{minipage}{0.45\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{figs/Chap_12_Figure_dim=100.png}
+    \end{minipage}
 \end{figure}

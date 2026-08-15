@@ -3,11 +3,11 @@
 
 \subsection{优化目标}
 
-首先回忆逻辑回归的优化目标：
+逻辑回归的优化目标为：
 \[
 \min_\theta\frac{1}{m}\left[\sum_{i=1}^my^{(i)}\left(-\ln h_\theta(x^{(i)})\right)+(1-y^{(i)})\left(-\ln (1-h_\theta(x^{(i)}))\right)\right]+\frac{\lambda}{2m}\sum_{j=1}^n\theta_j^2
 \]
-记上式中 $-\ln h_\theta(x^{(i)})$ 为 $\text{cost}_1(\theta^T x^{(i)})$，即分类为 $1$ 时采用的代价，$-\ln(1-h_\theta(x^{(i)}))$ 为 $\text{cost}_0(\theta^T x^{(i)})$，即分类为 $0$ 时采用的代价，则支持向量机中，我们不再采用 sigmoid 函数，而是：
+将 $-\ln h_\theta(x^{(i)})$ 记为 $\text{cost}_1(\theta^T x^{(i)})$，它表示样本类别为 $1$ 时的代价；将 $-\ln(1-h_\theta(x^{(i)}))$ 记为 $\text{cost}_0(\theta^T x^{(i)})$，它表示类别为 $0$ 时的代价。支持向量机不再通过 sigmoid 函数得到平滑的对数代价，而使用如下分段线性函数近似：
 \[
 \text{cost}_1(z)=\begin{cases}0&z\geqslant1\\k_1(z-1)&z<1\end{cases}\quad\quad
 \text{cost}_0(z)=\begin{cases}0&z\leqslant-1\\k_0(z+1)&z>-1\end{cases}
@@ -15,50 +15,54 @@
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\linewidth]{figs/Chap_10_cost.png}
+    \includegraphics[width=0.6\linewidth]{figs/Chap_10_cost.png}
 \end{figure}
 
-另外，我们习惯于不除以样本大小 $m$，并将正则化参数放在第一项而非第二项，即支持向量机的优化目标为：
+在支持向量机的常用写法中，通常省略除以样本数 $m$ 的系数，并将正则化参数置于第一项而不是第二项。故支持向量机的优化目标为：
 \[
 \boxed
 {\min_\theta C\sum_{i=1}^m\left[y^{(i)}\text{cost}_1(\theta^Tx^{(i)})+(1-y^{(i)})\text{cost}_0(\theta^Tx^{(i)})\right]+\frac{1}{2}\sum_{j=1}^n\theta_j^2}
 \]
-其中，$C$ 是正则化参数，类比逻辑回归中 $\frac{1}{\lambda}$ 的作用。
+其中，$C$ 是正则化参数，用于权衡分类误差与参数规模，其作用与逻辑回归中的 $\frac{1}{\lambda}$ 类似：$C$ 越大，对训练样本分类错误的惩罚越强。
 
-\begin{note}
-对该代价函数的理解：
+\begin{remark}
+先考察 $y\text{cost}_1(\theta^Tx)+(1-y)\text{cost}_0(\theta^Tx)$ 这一分类代价。理想情况下，希望 $\text{cost}_y(\theta^T x)=0$，这对应 $\begin{cases}\theta^Tx\geqslant 1&\text{if }y=1\\\theta^Tx\leqslant -1&\text{if }y=0\end{cases}$. 以类别 $1$ 为例，逻辑回归只需要比较 $\theta^Tx$ 与 $0$ 的大小便可作出分类，而支持向量机还要求 $\theta^Tx$ 至少达到 $1$. 这意味着样本不仅要位于决策边界正确的一侧，还要与边界保持一定间隔。
 
-首先看看 $y\text{cost}_1(\theta^Tx)+(1-y)\text{cost}_0(\theta^Tx)$ 这一项，欲使之最小，最理想的情况就是 $\text{cost}_y(\theta^T x)=0$，这对应着 $\begin{cases}\theta^Tx\geqslant 1&\text{if }y=1\\\theta^Tx\leqslant -1&\text{if }y=0\end{cases}$；而在逻辑回归中，我们只需要对比 $\theta^Tx$ 和 $0$ 的大小，这里相当于将条件变得更苛刻。
-
-注意 $\theta^Tx$ 其实是参数 $\theta$ 和 $x$ 两个向量的点积，可以视作 $x$ 向 $\theta$ 的投影乘上 $\theta$ 的长度 $||\theta||$；而 $\sum\limits_{j=1}^n\theta_j^2$ 就是 $||\theta||$。从这个几何角度看，如果 $C$ 取值较大，那么我们很关心能否把原数据集完美地线性分开，因为这样，只要 $||\theta||$ 充分大，那么第一项就能取到 $0$；相反地，如果 $C$ 取值较小，那么即便有些数据点没有被正确地线性分类（第一项不为 $0$），由于我们需要的 $||\theta||$ 不必太大，所以总代价依然较小。
+从几何角度看，$\theta^Tx$ 是向量 $\theta$ 与 $x$ 的点积，可以理解为 $x$ 在 $\theta$ 方向上的投影与 $\theta$ 长度的乘积。$||\theta||$ 表示参数向量的长度，而正则化项 $\sum\limits_{j=1}^n\theta_j^2$ 等于 $||\theta||$ 的平方。减小参数长度相当于增大决策边界两侧的几何间隔，因此第二项体现了最大间隔的目标。$C$ 较大时，模型更重视让训练样本满足分类条件，即使这需要较大的参数；$C$ 较小时，模型允许少量样本被错误分类或落入间隔内部，以换取更大的分类间隔和更强的正则化。
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{figs/Chap_10_big_margin.png}
 \end{figure}
 
-\end{note}
+\end{remark}
 
 
 \subsection{核函数}
 
-对于非线性可分集，我们引入核函数 $\phi:x\mapsto \phi(x)$，它将原来的 $n$ 维向量映射为更高维的向量，使得这些向量在该更高维空间中线性可分。常用的核函数有：
+对于在原特征空间中无法用直线或超平面分开的数据，可以引入核函数 $\phi:x\mapsto \phi(x)$，将原始 $n$ 维向量映射到更高维的特征空间。原空间中的非线性边界可能对应新空间中的线性边界，因此仍可使用线性支持向量机进行分类。常用核函数包括：
 
-\begin{itemize}
-    \item 线性核：$\phi(x_i)=x_i$，即不做任何改变；
-    \item 高斯核：$\phi(x)=\begin{bmatrix}\exp\left(-\frac{||x-l^{(1)}||^2}{2\sigma^2}\right)\\\exp\left(-\frac{||x-l^{(2)}||^2}{2\sigma^2}\right)\\\vdots\\\exp\left(-\frac{||x-l^{(m)}||^2}{2\sigma^2}\right)\end{bmatrix}$，其中 $\sigma$ 是参数，$l^{(1)},\cdots,l^{(m)}$ 被称作 landmark，实践中直接采用输入数据 $x^{(1)},\cdots,x^{(m)}$ 作为 landmark。
-\end{itemize}
+\textbf{线性核}：保持原特征不变
+\[
+\phi(x_i)=x_i
+\]
+
+\textbf{高斯核}
+\[
+\phi(x)=\begin{bmatrix}\exp\left(-||x-l^{(1)}||^2/2\sigma^2\right)\\\exp\left(-||x-l^{(2)}||^2/2\sigma^2\right)\\\vdots\\\exp\left(-||x-l^{(m)}||^2/2\sigma^2\right)\end{bmatrix}
+\]
+其中 $\sigma$ 控制相似度随距离衰减的速度，$l^{(1)},\cdots,l^{(m)}$ 称为 landmark. 每个新特征衡量输入 $x$ 与某个 landmark 的接近程度；实践中通常直接采用训练样本 $x^{(1)},\cdots,x^{(m)}$ 作为 landmark.
 
 
-\subsection{\texttt{scikit-learn} 实现}
+\subsection{代码实现}
 
-\paragraph{线性可分类}
+\paragraph{线性可分情形}
 
-首先看一下数据集的样子：
+首先观察数据集：
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\linewidth]{figs/Chap_10_Figure_1.png}
+    \includegraphics[width=0.4\linewidth]{figs/Chap_10_Figure_1.png}
 \end{figure}
 
 \begin{lstlisting}[language=Python]
@@ -72,17 +76,17 @@ clf.fit(X, y)
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\linewidth]{figs/Chap_10_Figure_1_1.png}
+    \includegraphics[width=0.8\linewidth]{figs/Chap_10_Figure_1_1.png}
 \end{figure}
 
 
 \paragraph{带高斯核的 SVM}
 
-依旧先看数据集的样子：
+首先观察数据集：
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\linewidth]{figs/Chap_10_Figure_2.png}
+    \includegraphics[width=0.4\linewidth]{figs/Chap_10_Figure_2.png}
 \end{figure}
 
 \begin{lstlisting}[language=Python]
@@ -96,7 +100,7 @@ clf.fit(X, y)
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\linewidth]{figs/Chap_10_Figure_2_1.png}
+    \includegraphics[width=0.4\linewidth]{figs/Chap_10_Figure_2_1.png}
 \end{figure}
 
 
@@ -106,7 +110,7 @@ clf.fit(X, y)
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\linewidth]{figs/Chap_10_Figure_3.png}
+    \includegraphics[width=0.4\linewidth]{figs/Chap_10_Figure_3.png}
 \end{figure}
 
 \begin{lstlisting}[language=Python]
@@ -128,5 +132,5 @@ clf.fit(X, y)
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\linewidth]{figs/Chap_10_Figure_3_1.png}
+    \includegraphics[width=0.4\linewidth]{figs/Chap_10_Figure_3_1.png}
 \end{figure}

@@ -3,46 +3,48 @@
 
 \subsection{总结}
 
-吴恩达老师的机器学习系列课程到这里就结束了，$40$ 天里，我学到了许多有趣的、极具吸引力的机器学习知识，相信若干年后想起这段时光，仍然会感谢吴恩达老师带我入门了这个领域。
+至此，本课程的主要内容已经学习完毕。课程从线性回归出发，逐步介绍分类、神经网络、无监督学习与推荐系统等主题，使我对机器学习的基本概念、常用算法和实践方法形成了较为系统的认识。这段学习经历不仅完成了机器学习领域的入门，也为后续理解更复杂的模型奠定了基础。
 
-在这门课上，我们学习了以下内容：
+课程主要内容如下：
 
 \begin{itemize}
-    \item 监督学习 Supervised learning
+    \item 监督学习（Supervised Learning）
       \begin{itemize}
-        \item 线性回归 Linear regression （第 \ref{sec:chapter1},\ref{sec:chapter2},\ref{sec:chapter3} 章）
-        \item 逻辑回归 Logistic regression（第 \ref{sec:chapter4},\ref{sec:chapter5},\ref{sec:chapter6} 章）
-        \item (BP)神经网络 Neural networks（第 \ref{sec:chapter7},\ref{sec:chapter8} 章）
-        \item 支持向量机 Support vector machines（第 \ref{sec:chapter10} 章）
+        \item 线性回归（Linear Regression，第 \ref{sec:chapter1},\ref{sec:chapter2},\ref{sec:chapter3} 章）
+        \item 逻辑回归（Logistic Regression，第 \ref{sec:chapter4},\ref{sec:chapter5},\ref{sec:chapter6} 章）
+        \item BP 神经网络（Neural Networks，第 \ref{sec:chapter7},\ref{sec:chapter8} 章）
+        \item 支持向量机（Support Vector Machines，第 \ref{sec:chapter10} 章）
       \end{itemize}
-    \item 无监督学习 Unsupervised learning
+    \item 无监督学习（Unsupervised Learning）
       \begin{itemize}
         \item K-Means（第 \ref{sec:chapter11} 章）
-        \item 主成分分析 Principal component analysis（第 \ref{sec:chapter12} 章）
-        \item 异常检测 Anomaly detection（第 \ref{sec:chapter13} 章）
+        \item 主成分分析（Principal Component Analysis，第 \ref{sec:chapter12} 章）
+        \item 异常检测（Anomaly Detection，第 \ref{sec:chapter13} 章）
       \end{itemize}
-    \item 特殊应用/特殊专题
+    \item 应用与专题
       \begin{itemize}
-        \item 推荐系统 Recommender systems（协同过滤 Collaborative filtering）（第 \ref{sec:chapter14} 章）
-        \item 大规模机器学习 Large scale machine learning
+        \item 推荐系统（Recommender Systems）与协同过滤（Collaborative Filtering，第 \ref{sec:chapter14} 章）
+        \item 大规模机器学习（Large-scale Machine Learning）
       \end{itemize}
-    \item 建立机器学习模型时的一些建议
+    \item 机器学习模型的构建与评估
       \begin{itemize}
-        \item 方差与偏差 Bias / variance（第 \ref{sec:chapter9} 章）
-        \item 正则化 Regularization（第 \ref{sec:chapter5} 章）
-        \item 对学习算法的评价：precision, recall, f1 score
-        \item 学习曲线 Learning curves（第 \ref{sec:chapter9} 章）
-        \item 误差分析 Error analysis
-        \item 上界分析 Ceiling analysis
+        \item 偏差与方差（Bias/Variance，第 \ref{sec:chapter9} 章）
+        \item 正则化（Regularization，第 \ref{sec:chapter5} 章）
+        \item 评价指标：Precision、Recall 与 F1 Score
+        \item 学习曲线（Learning Curves，第 \ref{sec:chapter9} 章）
+        \item 误差分析（Error Analysis）
+        \item 上界分析（Ceiling Analysis）
       \end{itemize}
 \end{itemize}
 
 
 \subsection{使用 \texttt{scikit-learn} 进行机器学习}
 
-学习过程中的代码基本都是自己实现的，运行效率和使用容易程度上不敢恭维……现在清楚了原理之后，就可以放心大胆地调包了。
+前文代码大多从公式出发自行实现，主要目的在于理解算法原理和训练过程，因此没有特别优化运行效率、数值稳定性和易用性。掌握基本原理后，实际应用中可以使用成熟的机器学习库避免重复实现底层细节。下面使用 \texttt{scikit-learn} 重新完成若干典型任务。
 
 \paragraph{线性回归}
+
+使用 \texttt{LinearRegression} 拟合一元线性回归数据，并绘制样本点与回归直线。
 
 \begin{center}
 \begin{lstlisting}[language=Python]
@@ -99,6 +101,8 @@ print(reg.predict(X))
 \end{lstlisting}
 
 \paragraph{逻辑回归}
+
+使用 \texttt{LogisticRegression} 完成二分类，并分别观察线性特征与扩展特征下的决策边界。
 
 \begin{center}
 \begin{lstlisting}[language=Python]
@@ -201,6 +205,8 @@ plt.show()
 
 \paragraph{多项式回归}
 
+先生成多项式特征，再使用线性回归拟合非线性数据，从而复现多项式回归流程。
+
 \begin{center}
 \begin{lstlisting}[language=Python]
 """
@@ -256,6 +262,8 @@ plt.show()
 
 \paragraph{BP 神经网络}
 
+使用多层感知机分类器完成前向传播与反向传播训练，无须手动实现各层梯度。
+
 \begin{center}
 \begin{lstlisting}[language=Python]
 """
@@ -290,6 +298,8 @@ print(clf.score(X_test, y_test))
 \end{center}
 
 \paragraph{支持向量机}
+
+分别使用线性支持向量分类器和带核函数的支持向量机，比较它们得到的决策边界。
 
 \begin{center}
 \begin{lstlisting}[language=Python]
@@ -384,6 +394,8 @@ plt.show()
 
 \paragraph{K-Means}
 
+使用 \texttt{KMeans} 对二维数据进行聚类，并将不同簇及其聚类中心可视化。
+
 \begin{center}
 \begin{lstlisting}[language=Python]
 """
@@ -418,6 +430,8 @@ plt.show()
 \end{figure}
 
 \paragraph{主成分分析}
+
+使用 \texttt{PCA} 完成数据降维，并比较低维投影与重构结果。
 
 \begin{center}
 \begin{lstlisting}[language=Python]
@@ -495,6 +509,8 @@ plt.show()
 \end{figure}
 
 \paragraph{异常检测}
+
+使用协方差估计与异常检测接口拟合正常数据分布，并识别低概率样本。
 
 \begin{center}
 \begin{lstlisting}[language=Python]

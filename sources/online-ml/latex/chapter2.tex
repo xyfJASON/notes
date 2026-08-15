@@ -3,49 +3,48 @@
 
 \subsection{多元线性回归}
 
-类似于一元的线性回归，不过我们现在有多个自变量 $x_1,x_2,\cdots,x_n$，即给定的数据集为：
+多元线性回归是一元线性回归的推广，其输入包含多个特征 $x_1,x_2,\cdots,x_n$. 给定数据集：
 \[
 \left\{\left(x_1^{(i)},x_2^{(i)},\cdots,x_n^{(i)},y^{(i)}\right),\;i=1,2,\cdots,m\right\}
 \]
-相应地，回归方程也具有多个参数 $\theta_0,\theta_1,\cdots,\theta_n$：
+相应的回归模型也包含多个参数 $\theta_0,\theta_1,\cdots,\theta_n$：
 \[
 h_\theta(x)=\theta^Tx=\theta_0x_0+\cdots+\theta_nx_n
 \]
-这里我们假定 $x_0$ 恒等于 $1$，并以向量表示自变量和参数：$\theta=(\theta_0,\cdots,\theta_n)^T,\;x=(x_0,\cdots,x_n)^T$. 
-
+为表示方便，这里假定 $x_0$ 恒等于 $1$，且记 $\theta=(\theta_0,\cdots,\theta_n)^T,\;x=(x_0,\cdots,x_n)^T$.
 
 
 \subsection{梯度下降解多元线性回归}
 
-类似的，我们定义代价函数：
+\paragraph{代码函数及其梯度}
+
+与一元线性回归类似，定义代价函数为均方误差：
 \[
 J(\theta)=\frac{1}{2m}\sum_{i=1}^m\left(\theta^Tx^{(i)}-y^{(i)}\right)^2
 \]
-于是，
+其关于参数向量的梯度为：
 \[
 \frac{\partial J}{\partial \theta}=\frac{1}{m}\sum_{i=1}^m\left(\theta^Tx^{(i)}-y^{(i)}\right)x^{(i)}
 \]
-梯度下降时，不断作迭代：
+因此，梯度下降的参数更新公式为：
 \[
 \theta:=\theta-\alpha\cdot\frac{\partial J}{\partial \theta}
 \]
-即可。
+反复执行上述更新，直至参数或代价函数收敛。
 
 
 \paragraph{特征缩放与标准化}
 
-当我们的不同自变量取值范围相差较大时，梯度下降可能会很慢，这时，我们需要把所有自变量进行缩放、标准化。具体的，只要我们置：
+当不同特征的取值范围相差较大时，代价函数的等高线会较为狭长，梯度下降可能需要更多次迭代才能收敛。为改善收敛速度，可以对各个特征进行标准化：
 \[
 x_i^{(j)}:=\frac{x_i^{(j)}-\mu_i}{\sigma_i}
 \]
-其中，$\mu_i=\frac{1}{m}\sum\limits_{j=1}^m x_i^{(j)}$ 是样本均值，$\sigma_i=\sqrt{\frac{\sum\limits_{j=1}^m\left(x_i^{(j)}-\mu_i\right)^2}{m-1}}$ 是样本标准差，就完成了归一化。
-
-归一化后样本均值为 $0$，方差为 $1$. 
+其中，$\mu_i=\frac{1}{m}\sum_{j=1}^m x_i^{(j)}$ 是样本均值，$\sigma_i^2=\frac{1}{m-1}\sum_{j=1}^m\left(x_i^{(j)}-\mu_i\right)^2$ 是样本方差。标准化后，样本均值为 $0$，方差为 $1$，不同特征具有相近的尺度，有利于梯度下降稳定而快速地收敛。
 
 
-\paragraph{代码实现}
+\subsection{代码实现}
 
-\texttt{Normalization} 函数将数据集标准化，\texttt{J} 函数即计算 $J(\theta)$，\texttt{partJ} 函数计算 $\frac{\partial J}{\partial\theta}$，\texttt{GradientDescent} 进行梯度下降。
+以下代码中，\texttt{Normalization} 函数用于标准化数据，\texttt{J} 函数用于计算 $J(\theta)$，\texttt{partJ} 函数用于计算 $\frac{\partial J}{\partial\theta}$，\texttt{GradientDescent} 函数则负责执行梯度下降。
 
 \begin{lstlisting}[language=Python]
 import numpy as np
@@ -94,11 +93,11 @@ p1.set_ylabel('Cost')
 plt.show()
 \end{lstlisting}
 
-最后得到的结果：$\theta=(-1.11051830\times10^{-16},8.84765988\times10^{-1},-5.31788197\times10^{-2})^T$. 
+最终得到的参数为：$\theta=(-1.11051830\times10^{-16},8.84765988\times10^{-1},-5.31788197\times10^{-2})^T$.
 
-学习率取为 $0.01$ 时，代价函数值随迭代次数的变化：
+当学习率取为 $0.01$ 时，代价函数随迭代次数的变化如下图所示：
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\linewidth]{figs/Chap_1_Figure_2.png}
+    \includegraphics[width=0.5\linewidth]{figs/Chap_2_Figure_1.png}
 \end{figure}

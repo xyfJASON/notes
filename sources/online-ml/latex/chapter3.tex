@@ -3,36 +3,35 @@
 
 \subsection{正规方程}
 
-说白了，这就是用我们在微积分中学习的多元微分学知识直接解出答案。
+正规方程利用多元微分直接求解线性回归的最优参数，无须像梯度下降那样反复迭代。
 
 对于代价函数：
 \[
 J(\theta)=J(\theta_0, \theta_1,\cdots, \theta_n)
 \]
-如果它是连续的，那么要求出它的最小值，只需要令各偏导为零，就能得到 $\theta$ 的值：
+若代价函数可微且为凸函数，则可令各偏导数为零，从而求得使其取最小值的参数 $\theta$：
 \[
 \frac{\partial J}{\partial \theta_j}=0,\quad j=0,1,\cdots,n
 \]
-或写作向量形式：
+写成向量形式即为：
 \[
 \frac{\partial J}{\partial \theta}=\vec 0
 \]
-下面我们就来对多元线性回归的代价函数解一解。
-
+下面将这一方法应用于多元线性回归。
 
 多元线性回归的代价函数为：
 \[
 J(\theta)=\frac{1}{2m}\sum_{i=1}^m\left(\theta^Tx^{(i)}-y^{(i)}\right)^2
 \]
-于是其偏导函数为：
+其梯度为：
 \[
 \frac{\partial J}{\partial \theta}=\frac{1}{m}\sum_{i=1}^m\left(\theta^Tx^{(i)}-y^{(i)}\right)x^{(i)}
 \]
-要使之为零向量，只能是：
+令其为零，解得：
 \[
 \theta^Tx^{(i)}=y^{(i)},\quad i=1,2,\cdots,m
 \]
-恒成立。写作矩阵为：
+这些等式可以统一写成矩阵形式：
 \[
 X\theta=y
 \]
@@ -40,21 +39,18 @@ X\theta=y
 \[
 X=\begin{bmatrix}x_0^{(1)}&x_1^{(1)}&\cdots& x_n^{(1)}\\x_0^{(2)}&x_1^{(2)}&\cdots& x_n^{(2)}\\\vdots&\vdots&\ddots&\vdots\\x_0^{(m)}&x_1^{(m)}&\cdots& x_n^{(m)}\end{bmatrix}=\begin{bmatrix}{x^{(1)}}^T\\{x^{(2)}}^T\\\vdots\\{x^{(m)}}^T\\\end{bmatrix},\quad y=\begin{bmatrix}y^{(1)}\\y^{(2)}\\\vdots\\y^{(m)}\end{bmatrix}
 \]
-两边同时乘以 $X^T$，假设 $X^TX$ 可逆，解得：
+两边同时乘以 $X^T$，并假设 $X^TX$ 可逆，解得：
 \[
 \theta=(X^TX)^{-1}X^Ty
 \]
-这就是数学上多元线性回归方程的精确解。
+这就是多元线性回归的解析解。
+
+由于 $X^TX$ 是一个 $(n+1)\times(n+1)$ 的矩阵，直接求逆或求解线性方程组的时间复杂度通常为 $O(n^3)$. 当 $n$ 不大时，正规方程能够一次得到解析解，也不需要选择学习率；但当 $n$ 达到 $10^4,10^5$ 或更高数量级时，矩阵运算的时间和空间开销都会迅速增加，此时通常应考虑梯度下降等迭代方法。
 
 
-这里，$X^TX$ 是一个 $(n+1)\times(n+1)$ 的矩阵，因此直接计算 $\theta$ 的复杂度是 $O(n^3)$ 的，如果 $n$ 不是很大，这是有效的，但是如果 $n$ 达到了 $10^4,10^5$ 或更高级别，就需要使用梯度下降了。
+\subsection{代码实现}
 
-
-\paragraph{代码实现}
-
-仍然对第二篇中的多元线性回归数据进行求解。
-
-代码很简洁：
+仍使用第 \ref{sec:chapter2} 节中的多元线性回归数据，代码如下：
 
 \begin{lstlisting}[language=Python]
 import numpy as np
@@ -75,12 +71,12 @@ print(T)
 print(J(T, X, Y))
 \end{lstlisting}
 
-很快给出了结果：$\theta=(89597.9095428,\,139.21067402,\,-8738.01911233)^T$. 
+计算很快即可完成，结果为：$\theta=(89597.9095428,\,139.21067402,\,-8738.01911233)^T$.
 
 
 \subsection{不可逆情形}
 
-前一节的推导基于 $X^TX$ 可逆的假设，如若不可逆，我们只需将代码中的 \texttt{inv()} 换成 \texttt{pinv()} 求出\textbf{伪逆矩阵}即可。
+上述求解过程建立在 $X^TX$ 可逆的假设上。当特征之间存在冗余或线性相关关系时，该矩阵可能不可逆。此时可以将代码中的 \texttt{inv()} 替换为 \texttt{pinv()}，通过\textbf{伪逆矩阵}求得一个最小二乘意义下的解。
 
 \begin{lstlisting}[language=Python]
 import numpy as np

@@ -3,48 +3,49 @@
 
 \subsection{一元线性回归}
 
-给定数据集：
+给定如下数据集：
 \[
 \left\{\left(x^{(i)},y^{(i)}\right),\;i=1,2,\cdots,m\right\}
 \]
-试用一线性函数 $y=\theta_1x+\theta_0$ 拟合之。当然，在数学上，我们熟知最小二乘法可以解决这个问题。
+其中，$m$ 表示样本数量，$x^{(i)}$ 与 $y^{(i)}$ 分别表示第 $i$ 个样本的输入和对应的观测值。一元线性回归的目标是使用线性函数 $y=\theta_1x+\theta_0$ 对这些数据进行拟合。虽然该问题可以直接通过最小二乘法求得解析解，但本节以它为例介绍如何使用梯度下降法迭代求解。
 
 
 \subsection{梯度下降法}
 
-梯度下降法的基本思想很简单：对于代价函数 $J(\theta_0,\theta_1)$，我们想得到它的一个极小值，只需要从任意点开始，选择函数 $J$ 的梯度方向的逆方向，也即方向导数最大的方向移动一点点，然后不断重复这个过程。
+梯度下降法是一种常用的迭代优化算法。对于代价函数 $J(\theta_0,\theta_1)$，其基本思路是从一个初始参数点出发，沿当前点负梯度所指示的下降方向移动一小步，并反复执行这一过程，从而逐步减小代价函数的取值。若代价函数满足适当的凸性与光滑性条件，该过程可以收敛到其全局最小值；在更一般的情况下，梯度下降法通常用于寻找局部极小值或驻点。
 
-我们知道梯度定义为：
+函数 $J$ 关于参数 $\theta_0$ 和 $\theta_1$ 的梯度定义为：
 \[
 \text{grad }J=\left\{\frac{\partial J}{\partial \theta_0},\frac{\partial J}{\partial \theta_1}\right\}
 \]
-所以不断迭代进行：
+因此，可以按照下式不断更新参数：
 \[
 \theta_j:=\theta_j-\alpha\cdot\frac{\partial J}{\partial\theta_j},\quad j=0,1
 \]
-即可。其中，$\alpha$ 就是这一步的长度，也称为学习率。
+其中，$\alpha$ 表示每次更新的步长，通常称为\textbf{学习率}。需要注意的是，在一次迭代中，$\theta_0$ 和 $\theta_1$ 应当依据更新前的参数值同步计算并更新。
 
-学习率的选取很重要，过小则梯度下降很慢，过大则有可能不收敛。
+学习率的选取会直接影响算法的收敛速度和稳定性。学习率过小时，每次参数更新的幅度有限，因而收敛过程可能较慢；学习率过大时，参数则可能越过极小值附近的区域并反复振荡，甚至导致算法无法收敛。
 
 
 \subsection{梯度下降解一元线性回归}
 
-将梯度下降法应用在解一元线性回归问题上，定义代价函数为：
+为了衡量模型预测值与真实观测值之间的差异，定义代价函数为：
 \[
 J(\theta_0,\theta_1)=\frac{1}{2m}\sum_{i=1}^m\left(\theta_1x^{(i)}+\theta_0-y^{(i)}\right)^2
 \]
-也即是每个数据纵坐标的真实值与估计值的均方误差。
+该函数是所有样本预测值与真实值的均方误差。
 
-由于：
+对代价函数分别关于 $\theta_0$ 和 $\theta_1$ 求偏导，可得：
 \[
-\text{grad }J=\left\{\frac{\partial J}{\partial \theta_0},\frac{\partial J}{\partial \theta_1}\right\}=\left\{\frac{1}{m}\sum_{i=1}^m\left(\theta_1x^{(i)}+\theta_0-y^{(i)}\right),\frac{1}{m}\sum_{i=1}^mx_i\left(\theta_1x^{(i)}+\theta_0-y^{(i)}\right)\right\}
+\text{grad }J=\left\{\frac{\partial J}{\partial \theta_0},\frac{\partial J}{\partial \theta_1}\right\}=\left\{\frac{1}{m}\sum_{i=1}^m\left(\theta_1x^{(i)}+\theta_0-y^{(i)}\right),\frac{1}{m}\sum_{i=1}^mx^{(i)}\left(\theta_1x^{(i)}+\theta_0-y^{(i)}\right)\right\}
 \]
-于是每一次按照该方向的逆方向走一小步即可。
+将上述两个偏导数代入参数更新公式，即可在每次迭代中沿负梯度方向调整 $\theta_0$ 和 $\theta_1$.
 
 
+\subsection{代码实现}
 \paragraph{C++ 实现}
 
-对于这个问题，我们可以通过预处理达到每次迭代 $O(1)$ 地更新。
+对于该问题，可以预先计算样本中若干与参数无关的求和项，使每次梯度更新的时间复杂度降为 $O(1)$.
 
 \begin{lstlisting}[language=C++]
 #include<bits/stdc++.h>
@@ -76,9 +77,9 @@ int main(){
 }
 \end{lstlisting}
 
-得到的结果是：$\theta_0=-3.895775,\,\theta_1=1.193033$.
+程序得到的结果为：$\theta_0=-3.895775,\,\theta_1=1.193033$.
 
-如果把 $\alpha$ 设为 $0.1$，上面的程序无法得到结果，这是因为步长太大以至于无法收敛，除了人为调小 $\alpha$ 以外，还可以尝试让程序自适应地调整 $\alpha$. 具体地，如果 $\alpha$ 设置合理，那么代价函数应该是一个随着迭代次数单调递减的函数，所以倘若代价函数出现了增加，我们就需要调小 $\alpha$，基于这个思想，可写出如下的程序：
+若将 $\alpha$ 设为 $0.1$，上述程序将无法获得收敛结果。这是因为学习率过大，参数更新可能在极小值附近反复跨越，导致代价函数无法稳定下降。除直接减小 $\alpha$ 之外，还可以让程序根据迭代过程自适应地调整学习率。具体地，当学习率取值合理时，代价函数通常应当随迭代逐步减小。因此，如果一次参数更新后代价函数反而增大，就可以将其视为当前学习率过大的信号，并相应减小 $\alpha$。基于这一思路，可以得到如下实现：
 
 \begin{lstlisting}[language=C++]
 #include<bits/stdc++.h>
@@ -128,21 +129,13 @@ int main(){
 }
 \end{lstlisting}
 
-最终得到的结果：$\alpha=0.0064,\,\theta_0=-3.895772,\,\theta_1=1.193033$. 
+最终得到的结果为：$\alpha=0.0064,\,\theta_0=-3.895772,\,\theta_1=1.193033$.
 
 
 \paragraph{Python 实现}
 
-Python 可以更方便地作图，也是现在机器学习中最热门的语言。
-
-首先看一下原数据的散点图：
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.5\linewidth]{figs/Chap_1_Figure_1.png}
-\end{figure}
-
-如下是学习率设置为 $0.01$ 的 python 代码：
+Python 拥有较为完善的可视化工具，常用于机器学习算法的实现和实验分析。
+如下是学习率设置为 0.01 的 Python 代码：
 
 \begin{lstlisting}[language=Python]
 import numpy as np
@@ -189,21 +182,29 @@ plt.plot([min(X), max(X)], [th0+min(X)*th1, th0+max(X)*th1], c="magenta")
 plt.show()
 \end{lstlisting}
 
-得到的结果是：$\theta_0=-3.895775334348606,\,\theta_1=1.193033087238351$，作图如下：
+程序得到的结果为：$\theta_0=-3.895775,\,\theta_1=1.193033$，原始数据及拟合效果如下图所示：
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\linewidth]{figs/Chap_1_Figure_2.png}
+    \begin{minipage}{0.4\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{figs/Chap_1_Figure_1.png}
+    \end{minipage}
+    \begin{minipage}{0.4\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{figs/Chap_1_Figure_2.png}
+    \end{minipage}
+    \vspace{-2ex}
 \end{figure}
 
-洋红色的线条就是我们拟合的回归曲线。
+图中的洋红色直线即为梯度下降法得到的线性回归模型。
 
-之前说过，学习率过大会导致答案不收敛，也就是 $J(\theta_0,\theta_1)$ 可能会随着迭代次数的增加而增大，我们可以作图验证：
+前文已经指出，学习率过大会导致迭代无法收敛，即 $J(\theta_0,\theta_1)$ 可能随迭代次数增加而增大。为了比较不同学习率对收敛过程的影响，可以绘制代价函数随迭代次数变化的曲线：
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{figs/Chap_1_Figure_3.png}
+    \vspace{-3ex}
 \end{figure}
 
-可以看见，学习率在 $0.025$ 时 $J$ 发散，而 $0.02$ 和 $0.01$ 下是收敛的。
-
+由图可见，当学习率为 $0.025$ 时，代价函数呈发散趋势；当学习率分别为 $0.02$ 和 $0.01$ 时，代价函数能够逐步收敛。这一结果说明，学习率需要结合具体问题进行选择，适当的取值才能兼顾收敛速度与迭代稳定性。

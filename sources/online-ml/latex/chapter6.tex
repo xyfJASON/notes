@@ -3,7 +3,7 @@
 
 \subsection{数据读入与显示}
 
-给定的数据是 \texttt{.mat} 格式的，使用 \texttt{scipy} 的 \texttt{loadmat} 方法可以读入数据：
+数据采用 \texttt{.mat} 格式，可以使用 \texttt{scipy} 中的 \texttt{loadmat} 方法读取：
 
 \begin{lstlisting}[language=Python]
 import numpy as np
@@ -33,9 +33,11 @@ print(data['y'].shape)
 (5000, 1)
 \end{lstlisting}
 
-文件中一共有 $5000$ 个数据，每个数据的输入是一个长为 $400$ 的向量，由 $20\times 20$ 的灰度矩阵压缩而来；输出是一个数字，表示这个数字是多少。
+文件中共有 $5000$ 个样本。每个样本的输入是由 $20\times 20$ 灰度图像展开得到的 $400$ 维向量，输出为图像对应的数字标签。
 
-> 注意：由于 `MATLAB` 或者 `Octave` 的一些原因，$0$ 被标记为了 $10$，我们用 `python` 时可以把 $10$ 换回成 $0$；另外，数据是按列压缩的，还原回 $20\times20$ 的矩阵后其实转置了一下，这里提前转置回去方便后续编码。
+\begin{note}
+由于 \texttt{MATLAB} 或 \texttt{Octave} 的数据约定，数字 $0$ 被标记为 $10$，使用 \texttt{Python} 时可以将其恢复为 $0$. 此外，图像数据按列展开，还原为 $20\times20$ 矩阵后需要转置。
+\end{note}
 
 \begin{lstlisting}[language=Python]
 data = loadmat('ex3data1.mat')
@@ -45,7 +47,7 @@ y = data['y']
 y[y==10] = 0
 \end{lstlisting}
 
-现在我们随机挑选 $100$ 个图像显示出来：
+随机选取 $100$ 幅图像，显示结果如下：
 
 \begin{lstlisting}[language=Python]
 def show_a_number(num, ax):
@@ -65,17 +67,15 @@ plt.show()
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\linewidth]{figs/Chap_6_Figure_0.png}
+    \includegraphics[width=0.6\linewidth]{figs/Chap_6_Figure_0.png}
 \end{figure}
 
 
 \subsection{多分类}
 
-这里采用「一对多」方式完成多分类，也就是说对每一类单独训练，最后挑选概率最大的那一类视为结果。
+这里采用“一对多”策略完成多分类。对于每一个数字，都单独训练一个逻辑回归分类器：属于当前数字的样本标记为正类，其余数字全部标记为负类。这样便可将一个十分类问题转化为 $10$ 个二分类问题。预测时，分别计算所有分类器给出的概率，并选择概率最大的类别作为最终结果。
 
-沿用上一节写好的矩阵形式的正则化逻辑回归代码，进行 $10$ 次分类即可。
-
-记得给 $X$ 每一行前加上一个 $1$. 
+沿用上一节的矩阵化正则逻辑回归代码，分别训练 $10$ 个分类器。注意需要在 $X$ 的每一行前添加一个 $1$ 作为偏置项。
 
 \begin{lstlisting}[language=Python]
 import numpy as np
@@ -131,14 +131,14 @@ for k in range(10):
 np.savetxt('theta.txt', Theta, delimiter=',')
 \end{lstlisting}
 
-现在 `theta.txt` 中装入了我们训练好的 Theta，接下来我们就可以用它来进行预测了：
+训练得到的参数保存至 \texttt{theta.txt}. 预测时读入该矩阵，对同一个输入同时计算 $10$ 个分类器的输出，再取最大值对应的数字：
 
 \begin{lstlisting}[language=Python]
 def predict(Theta, x):
 	return np.matmul(Theta, x).argmax(axis=0)
 \end{lstlisting}
 
-直接计算每个数字的准确率以及总准确率（其实这样不严谨，详见第九篇），得到结果：
+训练集上各数字的准确率如下。注意：训练集准确率并不能作为模型评估结果，详见第 \ref{sec:chapter9} 章。
 
 \begin{table}[H]
     \centering

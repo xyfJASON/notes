@@ -23,25 +23,30 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v6
 
-      - name: Compile online-ml
+      - name: Compile notes
         uses: xu-cheng/latex-action@v4
         with:
-          root_file: main.tex
-          working_directory: sources/online-ml/latex
+          root_file: sources/*/latex/main.tex
+          work_in_root_file_dir: true
           latexmk_use_xelatex: true
           texlive_version: 2026
           os: debian
 
       - name: Assemble website
         run: |
-          mkdir -p _site/sources/online-ml
+          mkdir -p _site
 
           cp index.html _site/
           cp stylesheet.css _site/
           cp -R images _site/images
 
-          cp sources/online-ml/latex/main.pdf \
-             _site/sources/online-ml/notes.pdf
+          for latex_dir in sources/*/latex; do
+            note_dir="${latex_dir%/latex}"
+            slug="${note_dir##*/}"
+
+            mkdir -p "_site/sources/$slug"
+            cp "$latex_dir/main.pdf" "_site/sources/$slug/notes.pdf"
+          done
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
