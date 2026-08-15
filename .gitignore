@@ -1,13 +1,17 @@
 .DS_Store
 _site/
 
-# Ignore unfinished notes, but track online-ml.
+# Ignore unfinished notes.
 sources/*
 !sources/online-ml/
 !sources/online-ml/**
+!sources/grad-matr/
+!sources/grad-matr/**
 
 # Generated LaTeX output.
 sources/online-ml/latex/main.pdf
+sources/grad-matr/latex/main.pdf
+
 **/*.aux
 **/*.bbl
 **/*.bcf
