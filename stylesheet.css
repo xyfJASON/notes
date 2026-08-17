@@ -77,6 +77,10 @@ h2 {
     border-radius: 10px;
 }
 
+.note + .note {
+    margin-top: 14px;
+}
+
 .note-content {
     min-width: 0;
 }

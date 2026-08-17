@@ -3,16 +3,19 @@ _site/
 
 # Ignore unfinished notes.
 sources/*
-!sources/online-ml/
-!sources/online-ml/**
 !sources/grad-matr/
 !sources/grad-matr/**
+!sources/online-ml/
+!sources/online-ml/**
+!sources/online-cs231n/
+!sources/online-cs231n/**
 !sources/book-prob/
 !sources/book-prob/**
 
 # Generated LaTeX output.
-sources/online-ml/latex/main.pdf
 sources/grad-matr/latex/main.pdf
+sources/online-ml/latex/main.pdf
+sources/online-cs231n/latex/main.pdf
 sources/book-prob/latex/main.pdf
 
 **/*.aux

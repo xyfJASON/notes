@@ -1,0 +1,116 @@
+\documentclass{article}
+
+%%%%%%%%%%%%%%%%%%% usepackage %%%%%%%%%%%%%%%%%%%
+
+\usepackage[a4paper, margin=1in]{geometry}
+\usepackage{ctex}
+
+% paragraph
+\usepackage{parskip}
+% math
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{centernot}
+\usepackage{arydshln}
+% reference
+\usepackage[hidelinks]{hyperref}
+% layout
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage{framed}
+\usepackage{float}
+\usepackage{caption}
+\usepackage[bottom]{footmisc}
+\AtEndEnvironment{figure}{\vspace{-0.5\baselineskip}}
+% color and box
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable}
+% table
+\usepackage{multicol}
+\usepackage{multirow}
+\usepackage{tabularx}
+% list
+\usepackage{enumitem}
+\setlist{noitemsep}
+
+
+%%%%%%%%%%%%%%%%%%%%%% math %%%%%%%%%%%%%%%%%%%%%%
+
+\theoremstyle{definition}
+\newtheorem{theorem}{定理}[section]
+\newtheorem{corollary}[theorem]{推论}
+\newtheorem{lemma}[theorem]{引理}
+\newtheorem*{property}{性质}
+
+\theoremstyle{definition}
+\newtheorem{definition}{定义}[section]
+\newtheorem{example}{例}[section]
+\newtheorem{exercise}{练习}
+
+\theoremstyle{remark}
+\newtheorem*{remark}{注解}
+\newtheorem*{note}{注意}
+\newtheorem*{com}{注释}
+
+\tcolorboxenvironment{example}{colback=blue!5!white, boxrule=0.5pt, breakable}
+\tcolorboxenvironment{remark}{colback=black!5!white, boxrule=0.5pt, breakable}
+% \tcolorboxenvironment{remark}{colback=green!10!white, boxrule=0.5pt, breakable}
+% \tcolorboxenvironment{note}{colback=yellow!10!white, boxrule=0.5pt, breakable}
+\tcolorboxenvironment{note}{colback=black!5!white, boxrule=0.5pt, breakable}
+\tcolorboxenvironment{com}{colback=black!5!white, boxrule=0.5pt, breakable}
+\tcolorboxenvironment{proof}{colback=black!5!white, boxrule=0.5pt, breakable}
+
+
+%%%%%%%%%%%%%%%%%% new command %%%%%%%%%%%%%%%%%%%
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\var}{\mathrm{var}}
+\newcommand\norm[1]{\Vert#1\Vert}
+\newcommand{\TODO}[1]{{\color{red}{TODO:#1}}}
+\newcolumntype{Y}{>{\centering\arraybackslash}X}
+
+%%%%%%%%%%%%%%%%%%%%%% main %%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\begin{titlepage}
+    \vspace*{0.5cm}
+    \begin{center}
+        \rule{\linewidth}{2.0pt} \\[0.8\baselineskip]
+        {\LARGE \textbf{\uppercase{Lecture Note}}}\\[0.8\baselineskip]
+        {\Large \textbf{\uppercase{Stanford CS231n·Convolutional Neural\\[0.2\baselineskip]Networks for Visual Recognition}}}\\[0.2\baselineskip]
+        \rule{\linewidth}{1.5pt} \\
+        
+        \vfill
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=1\linewidth]{figs/cover.png}
+        \end{figure}
+        \vfill
+        
+        {\large \textbf{Yifeng Xu}\\Harbin Institute of Technology, Shenzhen}\\[0.5cm]
+        {\large 2021.02 -- 2021.04}
+    \end{center}
+\end{titlepage}
+
+\thispagestyle{empty}
+\newpage
+
+\input{chapter0} \newpage
+\tableofcontents \newpage
+\input{chapter1} \newpage
+\input{chapter2} \newpage
+\input{chapter3} \newpage
+\input{chapter4} \newpage
+\input{chapter5} \newpage
+\input{chapter6} \newpage
+\input{chapter7} \newpage
+\input{chapter8} \newpage
+\input{chapter9} \newpage
+
+\end{document}
