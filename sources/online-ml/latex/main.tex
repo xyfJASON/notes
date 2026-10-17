@@ -8,11 +8,8 @@
 % paragraph
 \usepackage{parskip}
 % math
-\usepackage{amsthm}
-\usepackage{amsfonts}
-\usepackage{amsmath}
-\usepackage{amssymb}
 \usepackage{mathtools}
+\usepackage{amsthm}
 \usepackage{centernot}
 \usepackage{arydshln}
 % reference
@@ -50,6 +47,11 @@
     aboveskip=3ex,
     belowskip=0ex,
 }
+% font
+\usepackage{fontspec}
+\setmainfont{TeX Gyre Termes}
+\usepackage{unicode-math}
+\setmathfont{TeX Gyre Termes Math}
 
 
 %%%%%%%%%%%%%%%%%%%%%% math %%%%%%%%%%%%%%%%%%%%%%
@@ -92,9 +94,9 @@
 \begin{titlepage}
     \vspace*{0.5cm}
     \begin{center}
-        \rule{\linewidth}{2.0pt} \\[0.8\baselineskip]
-        {\LARGE \textbf{\uppercase{Lecture Note}}}\\[0.8\baselineskip]
-        {\Large \textbf{\uppercase{Machine Learning by Andrew Ng}}}\\[0.2\baselineskip]
+        \rule{\linewidth}{2.0pt} \\[\baselineskip]
+        {\LARGE \textbf{\uppercase{Lecture Notes}}}\\[0.8\baselineskip]
+        {\Large {Machine Learning by Andrew Ng}}\\[0.2\baselineskip]
         \rule{\linewidth}{1.5pt} \\
         
         \vfill
